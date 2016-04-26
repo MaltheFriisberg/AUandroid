@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
+import com.facebook.login.widget.LoginButton;
 import com.google.gson.JsonObject;
 
 import app.athleteunbound.RESTapiUtils.ApiCommunicatorAsync;
@@ -20,12 +22,15 @@ public class LoginActivity extends Activity {
     ProgressDialog progressDialog;
     TextView textField_username;
     TextView textField_password;
+    //LoginButton fbLoginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
-
+        //fbLoginButton = (LoginButton) findViewById(R.id.login_button);
+        //fbLoginButton.setReadPermissions("email");
         textField_username = (TextView) findViewById(R.id.textField_username);
         textField_password = (TextView) findViewById(R.id.textField_password);
         JsonObject loginResult;

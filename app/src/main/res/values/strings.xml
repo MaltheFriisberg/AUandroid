@@ -2,4 +2,6 @@
     <string name="app_name">AthleteUnbound</string>
     <string name="password">password</string>
     <string name="btn_login">Login</string>
+
+    <string name="facebook_app_id">222889818084660</string>
 </resources>
