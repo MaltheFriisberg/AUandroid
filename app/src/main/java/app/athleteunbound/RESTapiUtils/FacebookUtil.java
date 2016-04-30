@@ -27,7 +27,9 @@ public class FacebookUtil {
             String email = user.getString("email");
             appUser.put("username", username);
             appUser.put("email", email);
+            appUser.put("password", FBid); //this is NOT good
             user.put("FacebookId", FBid);
+            user.put("gender", user.getString("gender"));
         }catch (Exception e) {
 
         }

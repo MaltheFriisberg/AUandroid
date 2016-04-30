@@ -10,8 +10,10 @@ import com.loopj.android.http.SyncHttpClient;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -21,6 +23,8 @@ import java.util.concurrent.Future;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import app.athleteunbound.Interfaces.AsyncResponse;
+import app.athleteunbound.LoginActivity;
 import cz.msebera.android.httpclient.Header;
 
 /**
@@ -28,6 +32,13 @@ import cz.msebera.android.httpclient.Header;
  */
 public class ApiCommunicator extends AsyncTask<JSONObject, String, String> {
     HttpURLConnection urlConnection = null;
+
+
+    public AsyncResponse delegate = null;
+
+    public ApiCommunicator(AsyncResponse delegate){
+        this.delegate = delegate;
+    }
 
     public String saveNewAppUser(Gson user) {
         SyncHttpClient client = new SyncHttpClient();
@@ -49,7 +60,7 @@ public class ApiCommunicator extends AsyncTask<JSONObject, String, String> {
         });
         return "";
     }
-    public static String saveNewAppUser1(JSONObject user) {
+    /*public static String saveNewAppUser1(JSONObject user) {
 
         try {
             JSONObject obj = FacebookUtil.formatForPost(user);
@@ -79,10 +90,70 @@ public class ApiCommunicator extends AsyncTask<JSONObject, String, String> {
             e.printStackTrace();
         }
         return "";
-    }
+    }*/
 
     @Override
     protected String doInBackground(JSONObject... params) {
-        return saveNewAppUser1(params[0]);
+        JSONObject user = params[0];
+        try {
+            JSONObject obj = FacebookUtil.formatForPost(user);
+            URL url = new URL("http://192.168.0.104:8081/api/appuser/facebook");
+            String toPost = obj.toString();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setReadTimeout(10000);
+            conn.setConnectTimeout(15000);
+            conn.setRequestMethod("POST");
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(os, "UTF-8"));
+            writer.write(obj.toString());
+            writer.flush();
+            writer.close();
+            os.close();
+            int HttpResult =conn.getResponseCode();
+            int x = 7;
+
+            conn.connect();
+            if(HttpResult ==HttpURLConnection.HTTP_OK){
+                StringBuilder sb = new StringBuilder();
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        conn.getInputStream(),"utf-8"));
+                //String line;
+                String test = br.readLine();
+
+                return test;
+                /*while ((br.readLine()) != null) {
+                    sb.append(br.readLine() + "\n");
+                }*/
+                //br.close();
+
+                //System.out.println(""+sb.toString());
+                //return sb.toString();
+
+
+            }else{
+                System.out.println(urlConnection.getResponseMessage());
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+        //call back to the activity when the AsyncTask is done
+        try {
+            JSONObject obj = new JSONObject(s);
+            delegate.processFinish(obj); //kald tilbage til LoginActivity
+        }catch (Exception e) {
+
+        }
+
+
     }
 }

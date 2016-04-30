@@ -4,4 +4,7 @@
     <string name="btn_login">Login</string>
 
     <string name="facebook_app_id">222889818084660</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
