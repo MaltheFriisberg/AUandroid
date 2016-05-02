@@ -25,11 +25,14 @@ public class FacebookUtil {
             String FBid = user.getString("id");
             String username = user.getString("name");
             String email = user.getString("email");
+            String facebookToken = user.getString("FacebookToken");
+            appUser.put("FacebookId", user.getString("id"));
             appUser.put("username", username);
             appUser.put("email", email);
             appUser.put("password", FBid); //this is NOT good
-            user.put("FacebookId", FBid);
-            user.put("gender", user.getString("gender"));
+            appUser.put("FacebookToken", user.getString("FacebookToken"));
+
+            appUser.put("gender", user.getString("gender"));
         }catch (Exception e) {
 
         }

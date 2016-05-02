@@ -2,9 +2,12 @@ package app.athleteunbound;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -30,6 +33,7 @@ import java.util.Arrays;
 import app.athleteunbound.Interfaces.AsyncResponse;
 import app.athleteunbound.RESTapiUtils.ApiCommunicator;
 import app.athleteunbound.RESTapiUtils.ApiCommunicatorAsync;
+import app.athleteunbound.RESTapiUtils.FacebookAuthAsync;
 import app.athleteunbound.RESTapiUtils.FacebookUtil;
 import app.athleteunbound.RESTapiUtils.FbloginButtonConfig;
 
@@ -78,66 +82,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
             }
         });
         config.Register(callbackManager, FBlogin_button);
-        /*FBlogin_button.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d("token ", loginResult.getAccessToken().getToken());
-                //Log.d("email", loginResult.getAccessToken().getPermissions());
-                //loginResult.
-                Profile profile = Profile.getCurrentProfile();
-                if (Profile.getCurrentProfile() == null) {
-                    profileTracker = new ProfileTracker() {
-                        @Override
-                        protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                            mProfile = currentProfile;
-                            profileTracker.startTracking();
-                        }
-                    };
-                    profileTracker.startTracking();
-                } else {
-                    Profile profile1 = Profile.getCurrentProfile();
-                }
 
-                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(),
-                        new GraphRequest.GraphJSONObjectCallback() {
-                            @Override
-                            public void onCompleted(JSONObject object, GraphResponse response) {
-                                try {
-                                    Log.d("name ", object.getString("name"));
-                                    Log.d("email ", object.getString("email"));
-                                    //Log.d("token",object.getString("token"));
-                                    //Log.d("FbID ", object.getString("id"));
-                                    ApiCommunicator.saveNewAppUser1(object);
-
-                                    //Intent intent = new Intent(this, SportActivity.class);
-
-                                    //txtState.setText("Hi, " + object.getString("name"));
-                                } catch (JSONException ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        });
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,email,gender, birthday");
-                request.setParameters(parameters);
-                request.executeAsync();
-                Profile profile3 = mProfile;
-                Profile profile2 = Profile.getCurrentProfile(); // Save with api and go to new Activity?
-
-                //Log.d("profile ", profile.getName());
-
-            }
-
-            @Override
-            public void onCancel() {
-                Log.d("cancel ", "Login attempt canceled.");
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-                Log.d("error ", "Login attempt failed.");
-            }
-        });*/
 
     }
 
@@ -169,15 +114,15 @@ public class LoginActivity extends Activity implements AsyncResponse {
         startActivity(intent);
     }
 
-    private void handleUserLogin(JSONObject obj) {
+    private void saveNewAppUser(JSONObject obj) {
         AsyncTask apiCommunicator = new ApiCommunicator(new AsyncResponse() {
             @Override
             public void processFinish(JSONObject obj) {
                 try {
-                    if(obj.getString("error")== null) {
+                    if(!obj.has("error")) {
                         //the user already exists
                         //load the main Window
-                        Log.d("error", obj.getString("error"));
+                        //Log.d("error", obj.getString("error"));
 
                         runSignupFlow(obj);
                     } else {
@@ -198,6 +143,47 @@ public class LoginActivity extends Activity implements AsyncResponse {
         //if the user is created
         //go to signup flow
         //else if user exists go to mainView
+    }
+
+    private void handleUserLogin(JSONObject obj) {
+        AsyncTask FaceBookAuthAsync = new FacebookAuthAsync(new AsyncResponse() {
+            @Override
+            public void processFinish(JSONObject obj) {
+                Log.d("auth ",obj.toString());
+                //Object success = obj.getBoolean("success");
+                try {
+                    JSONObject appUser = obj.getJSONObject("AppUser");
+                    if(obj.getBoolean("success")!=true) {
+
+                        saveNewAppUser(appUser);
+                        //start the signup flow
+                        runSignupFlow(appUser);
+                    } else {
+
+                        String token = obj.getString("token");
+
+                        SaveToken(token);
+                        runMainViewActivity(appUser);
+
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).execute(obj);
+
+    }
+    private void SaveToken(String token) {
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(this);
+
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("AthleteUnboundApiToken", token);
+        editor.commit();
+        String auth_token_string = settings.getString("AthleteUnboundApiToken", "");
+        //Log.d("t", auth_token_string);
+        int y = 7;
     }
 
     @Override

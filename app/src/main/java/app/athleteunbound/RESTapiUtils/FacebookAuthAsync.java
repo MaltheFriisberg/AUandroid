@@ -17,43 +17,49 @@ import app.athleteunbound.Interfaces.AsyncResponse;
 /**
  * Created by Mal on 30-04-2016.
  */
-public class GetAthleteAsync extends AsyncTask<JSONObject, String, String> {
+public class FacebookAuthAsync extends AsyncTask<JSONObject, String, JSONObject>{
     HttpURLConnection urlConnection = null;
 
 
     public AsyncResponse delegate = null;
 
-    public GetAthleteAsync(AsyncResponse delegate){
+    public FacebookAuthAsync(AsyncResponse delegate){
         this.delegate = delegate;
     }
     @Override
-    protected String doInBackground(JSONObject... params) {
+    protected JSONObject doInBackground(JSONObject... params) {
 
-        JSONObject user = params[0];
         try {
-            JSONObject obj = FacebookUtil.formatForPost(user);
-            URL url = new URL("http://192.168.0.104:8081/api/athlete");
-            String toPost = obj.toString();
+
+            URL url = new URL("http://192.168.0.104:8081/api/appuser/authenticate/facebook");
+
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("facebookId", params[0].getString("id"));
+            conn.setRequestProperty("username", params[0].getString("name"));
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
-            conn.setDoOutput(true);
-
+            //conn.setDoOutput(true);
             int HttpResult =conn.getResponseCode();
-            int x = 7;
-
             conn.connect();
             if(HttpResult ==HttpURLConnection.HTTP_OK){
-                StringBuilder sb = new StringBuilder();
+
                 BufferedReader br = new BufferedReader(new InputStreamReader(
                         conn.getInputStream(),"utf-8"));
                 //String line;
-                String test = br.readLine();
+                String response = br.readLine();
+                //String test = params[0].toString()+" "+br.readLine();
+                JSONObject successStatus;
 
-                return test;
+                successStatus = new JSONObject(response);
+                successStatus.put("AppUser", params[0]);
+
+
+
+
+                return successStatus;
                 /*while ((br.readLine()) != null) {
                     sb.append(br.readLine() + "\n");
                 }*/
@@ -64,17 +70,21 @@ public class GetAthleteAsync extends AsyncTask<JSONObject, String, String> {
 
 
             }else{
-                System.out.println(urlConnection.getResponseMessage());
+                //System.out.println(urlConnection.getResponseMessage());
             }
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return "";
+        return new JSONObject();
     }
 
-
     @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
+    protected void onPostExecute(JSONObject obj) {
+        try {
+            //JSONObject obj = new JSONObject(s);
+            delegate.processFinish(obj); //kald tilbage til LoginActivity
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
