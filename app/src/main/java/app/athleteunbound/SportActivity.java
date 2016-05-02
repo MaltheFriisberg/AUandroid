@@ -7,11 +7,15 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,16 +32,26 @@ import java.util.Set;
 import app.athleteunbound.Interfaces.AsyncResponse;
 import app.athleteunbound.Interfaces.AsyncResponse1;
 import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
+import app.athleteunbound.RESTmodels.OnSwipeTouchListener;
 
 public class SportActivity extends AppCompatActivity {
+    TextView textView3;
+    TextView textView5;
+    TextView textView6;
     ListView listView;
+    ListView listView2;
+    RelativeLayout layout;
+
     private Set<JSONObject> sportSet = new HashSet<JSONObject>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sport);
+        this.textView6 = (TextView)findViewById(R.id.textView6);
         this.listView = (ListView)findViewById(R.id.listView);
+        this.listView2 = (ListView)findViewById(R.id.listView2);
+        this.layout = (RelativeLayout)findViewById(R.id.RelativeLayout);
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(this);
         String tokenString = settings.getString("AthleteUnboundApiToken", ""/*default value*/);
@@ -64,7 +78,19 @@ public class SportActivity extends AppCompatActivity {
                                     int position, long id) {
                 // getting values from selected ListItem
                 String valueSelected =(String) parent.getItemAtPosition(position);
+                textView6.setText(valueSelected);
                 Log.d("val selected", valueSelected);
+            }
+        });
+
+        layout.setOnTouchListener(new OnSwipeTouchListener(SportActivity.this){
+            public void onSwipeLeft() {
+                Toast.makeText(SportActivity.this, "Left", Toast.LENGTH_SHORT).show();
+                //if the sport is chosen,
+                //Go to the CompetenciesActivity
+            }
+            public void onSwipeRight() {
+                Toast.makeText(SportActivity.this, "Right", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -83,6 +109,5 @@ public class SportActivity extends AppCompatActivity {
         }
         listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listContents));
     }
-
 
 }
