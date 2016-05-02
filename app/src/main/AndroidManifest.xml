@@ -28,7 +28,8 @@
             android:value="@string/facebook_app_id" />
 
         <activity android:name=".SportActivity" />
-        <activity android:name=".MainViewActivity"></activity>
+        <activity android:name=".MainViewActivity" />
+        <activity android:name=".CompetencyActivity"></activity>
     </application>
 
 </manifest>

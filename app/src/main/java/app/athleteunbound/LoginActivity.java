@@ -110,7 +110,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
     }
     private void runSignupFlow(JSONObject obj){
         Intent intent = new Intent(this, SportActivity.class);
-        intent.putExtra("AppUser",obj.toString());
+        intent.putExtra("appUser",obj.toString());
         startActivity(intent);
     }
 

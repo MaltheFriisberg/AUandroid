@@ -1,6 +1,8 @@
 package app.athleteunbound.RESTapiUtils;
 
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 
@@ -15,13 +17,28 @@ import app.athleteunbound.Interfaces.AsyncResponse1;
 /**
  * Created by Mal on 02-05-2016.
  */
-public class ApiRequestAsync extends AsyncTask<String, String, String> {
+public class ApiRequestAsync extends AsyncTask<String, Integer, String> {
     HttpURLConnection urlConnection = null;
     public AsyncResponse1 delegate = null;
     final String baseUrl = "http://192.168.0.104:8081/";
-    public ApiRequestAsync(AsyncResponse1 delegate) {
+    private ProgressBar spinner;
+    public ApiRequestAsync(AsyncResponse1 delegate, ProgressBar spinner) {
         this.delegate = delegate;
+        this.spinner = spinner;
     }
+
+    @Override
+    protected void onPreExecute() {
+        //super.onPreExecute();
+        //spinner.star
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        //super.onProgressUpdate(values);
+        spinner.setProgress(values[0]);
+    }
+
     @Override
     protected String doInBackground(String... params) {
         String subUrl = params[0];
@@ -77,5 +94,6 @@ public class ApiRequestAsync extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String s) {
         delegate.processFinish(s);
+        spinner.setVisibility(View.GONE);
     }
 }
