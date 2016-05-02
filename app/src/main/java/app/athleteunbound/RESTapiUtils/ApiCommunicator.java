@@ -119,7 +119,7 @@ public class ApiCommunicator extends AsyncTask<JSONObject, String, String> {
 
             conn.connect();
             if(HttpResult ==HttpURLConnection.HTTP_OK){
-                StringBuilder sb = new StringBuilder();
+
                 BufferedReader br = new BufferedReader(new InputStreamReader(
                         conn.getInputStream(),"utf-8"));
                 //String line;
