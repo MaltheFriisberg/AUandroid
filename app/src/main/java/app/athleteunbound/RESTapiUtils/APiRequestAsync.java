@@ -20,7 +20,8 @@ import app.athleteunbound.Interfaces.AsyncResponse1;
 public class ApiRequestAsync extends AsyncTask<String, Integer, String> {
     HttpURLConnection urlConnection = null;
     public AsyncResponse1 delegate = null;
-    final String baseUrl = "http://192.168.0.104:8081/";
+    final String baseUrlHome = "http://192.168.0.104:8081/";
+    final String androidAPbaseUrl = "http://192.168.43.152:8081/";
     private ProgressBar spinner;
     public ApiRequestAsync(AsyncResponse1 delegate, ProgressBar spinner) {
         this.delegate = delegate;
@@ -48,7 +49,7 @@ public class ApiRequestAsync extends AsyncTask<String, Integer, String> {
         String postData = params[3];
         try {
 
-            URL url = new URL(baseUrl+subUrl);
+            URL url = new URL(baseUrlHome+subUrl);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             //conn.setRequestProperty("fb-access-token", params[0]); //token in the header

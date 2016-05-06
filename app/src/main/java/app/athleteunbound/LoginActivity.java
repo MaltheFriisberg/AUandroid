@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.CallbackManager;
@@ -31,8 +32,10 @@ import org.json.JSONObject;
 import java.util.Arrays;
 
 import app.athleteunbound.Interfaces.AsyncResponse;
-import app.athleteunbound.RESTapiUtils.ApiCommunicator;
+import app.athleteunbound.Interfaces.AsyncResponse1;
+
 import app.athleteunbound.RESTapiUtils.ApiCommunicatorAsync;
+import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
 import app.athleteunbound.RESTapiUtils.FacebookAuthAsync;
 import app.athleteunbound.RESTapiUtils.FacebookUtil;
 import app.athleteunbound.RESTapiUtils.FbloginButtonConfig;
@@ -46,6 +49,8 @@ public class LoginActivity extends Activity implements AsyncResponse {
     TextView textField_username;
     TextView textField_password;
     LoginButton FBlogin_button;
+    ProgressBar spinner;
+    String tokenString;
     private CallbackManager callbackManager;
     private ProfileTracker profileTracker;
     private Profile mProfile;
@@ -59,11 +64,13 @@ public class LoginActivity extends Activity implements AsyncResponse {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_login);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_login);
         FBlogin_button = (LoginButton) findViewById(R.id.FBlogin_button);
         FBlogin_button.setReadPermissions(Arrays.asList("public_profile", "email"));
+
         //FBlogin_button.setReadPermissions(FacebookUtil.facebookPermissions());
         //FBlogin_button.setRead
 
@@ -82,9 +89,15 @@ public class LoginActivity extends Activity implements AsyncResponse {
             }
         });
         config.Register(callbackManager, FBlogin_button);
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        this.tokenString = settings.getString("AthleteUnboundApiToken", ""/*default value*/);
+
+        spinner = (ProgressBar)findViewById(R.id.progressBar3);
+        }
 
 
-    }
+
 
     public void onClickLoginBtn(View v) {
         //getApplicationContext();
@@ -115,20 +128,21 @@ public class LoginActivity extends Activity implements AsyncResponse {
     }
 
     private void saveNewAppUser(JSONObject obj) {
-        AsyncTask apiCommunicator = new ApiCommunicator(new AsyncResponse() {
+        ApiRequestAsync apiCommunicator = (ApiRequestAsync)new ApiRequestAsync(new AsyncResponse1() {
             @Override
-            public void processFinish(JSONObject obj) {
+            public void processFinish(String obj) {
                 try {
-                    if(!obj.has("error")) {
+                    JSONObject jsonObj = new JSONObject(obj);
+                    if(!jsonObj.has("error")) {
+
+                        //Log.d("error", obj.getString("error"));
+                        SaveToken(jsonObj.getString("token"));
+                        runSignupFlow(jsonObj);
+                    } else {
                         //the user already exists
                         //load the main Window
-                        //Log.d("error", obj.getString("error"));
 
-                        runSignupFlow(obj);
-                    } else {
-
-
-                        runMainViewActivity(obj);
+                        runMainViewActivity(jsonObj);
                     }
                 } catch (Exception e) {
                     int k = 1;
@@ -138,7 +152,13 @@ public class LoginActivity extends Activity implements AsyncResponse {
                 }
 
             }
-        }).execute(obj);
+        }, this.spinner).execute(obj.toString());
+        /*AsyncTask apiRequestAsync = new ApiRequestAsync(new AsyncResponse1() {
+            @Override
+            public void processFinish(String result) {
+
+            }
+        });*/
         //ApiCommunicator.execute((JSONObject)obj);
         //if the user is created
         //go to signup flow
@@ -146,7 +166,32 @@ public class LoginActivity extends Activity implements AsyncResponse {
     }
 
     private void handleUserLogin(JSONObject obj) {
-        AsyncTask FaceBookAuthAsync = new FacebookAuthAsync(new AsyncResponse() {
+        ApiRequestAsync apiCommunicator = (ApiRequestAsync)new ApiRequestAsync(new AsyncResponse1() {
+            @Override
+            public void processFinish(String obj) {
+                try {
+                    JSONObject jsonObj = new JSONObject(obj);
+                    if(!jsonObj.has("error")) {
+
+                        //Log.d("error", obj.getString("error"));
+                        SaveToken(jsonObj.getString("token"));
+                        runSignupFlow(jsonObj);
+                    } else {
+                        //the user already exists
+                        //load the main Window
+
+                        runMainViewActivity(jsonObj);
+                    }
+                } catch (Exception e) {
+                    int k = 1;
+                    int y = 7;
+                    int u = 10;
+                    e.printStackTrace();
+                }
+
+            }
+        }, this.spinner).execute("api/appuser/authenticate/facebook", "GET", this.tokenString, obj.toString());
+        /*AsyncTask FaceBookAuthAsync = new FacebookAuthAsync(new AsyncResponse() {
             @Override
             public void processFinish(JSONObject obj) {
                 Log.d("auth ",obj.toString());
@@ -171,7 +216,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
                 }
 
             }
-        }).execute(obj);
+        }).execute(obj);*/
 
     }
     private void SaveToken(String token) {
