@@ -167,7 +167,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
     }
 
     private void handleUserLogin(JSONObject obj) {
-        ApiRequestAsync apiCommunicator = (ApiRequestAsync)new ApiRequestAsync(new AsyncResponse1() {
+        /*ApiRequestAsync apiCommunicator = (ApiRequestAsync)new ApiRequestAsync(new AsyncResponse1() {
             @Override
             public void processFinish(String obj) {
                 try {
@@ -191,8 +191,8 @@ public class LoginActivity extends Activity implements AsyncResponse {
                 }
 
             }
-        }, this.spinner).execute("api/appuser/authenticate/facebook", "GET", this.tokenString, obj.toString());
-        /*AsyncTask FaceBookAuthAsync = new FacebookAuthAsync(new AsyncResponse() {
+        }, this.spinner).execute("api/appuser/authenticate/facebook", "GET", this.tokenString, obj.toString());*/
+        AsyncTask FaceBookAuthAsync = new FacebookAuthAsync(new AsyncResponse() {
             @Override
             public void processFinish(JSONObject obj) {
                 Log.d("auth ",obj.toString());
@@ -217,7 +217,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
                 }
 
             }
-        }).execute(obj);*/
+        }).execute(obj);
 
     }
     private void SaveToken(String token) {

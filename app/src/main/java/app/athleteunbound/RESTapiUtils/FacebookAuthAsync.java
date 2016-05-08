@@ -31,8 +31,8 @@ public class FacebookAuthAsync extends AsyncTask<JSONObject, String, JSONObject>
     protected JSONObject doInBackground(JSONObject... params) {
 
         try {
-
-            URL url = new URL(androidAPbaseUrl+"api/appuser/authenticate/facebook");
+            JSONObject obj = params[0];
+            URL url = new URL(homeUrl+"api/appuser/authenticate/facebook");
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestProperty("facebookId", params[0].getString("id"));
