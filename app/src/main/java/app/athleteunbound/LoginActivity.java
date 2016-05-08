@@ -41,6 +41,7 @@ import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
 import app.athleteunbound.RESTapiUtils.FacebookAuthAsync;
 import app.athleteunbound.RESTapiUtils.FacebookUtil;
 import app.athleteunbound.RESTapiUtils.FbloginButtonConfig;
+import app.athleteunbound.RESTapiUtils.PostPutRequestAsync;
 
 /**
  * Created by Mal on 19-04-2016.
@@ -161,7 +162,30 @@ public class LoginActivity extends Activity implements AsyncResponse {
 
     }
     private void saveNewAppUser(JSONObject obj) {
-        AsyncTask apiCommunicator = new ApiCommunicator(new AsyncResponse() {
+        AsyncTask postPutRequest = new PostPutRequestAsync(new AsyncResponse() {
+            @Override
+            public void processFinish(JSONObject obj) {
+                try {
+                    if(!obj.has("error")) {
+                        //the user already exists
+                        //load the main Window
+                        //Log.d("error", obj.getString("error"));
+
+                        runSignupFlow(obj);
+                    } else {
+
+
+                        runMainViewActivity(obj);
+                    }
+                } catch (Exception e) {
+                    int k = 1;
+                    int y = 7;
+                    int u = 10;
+                    e.printStackTrace();
+                }
+            }
+        }).execute("api/appuser/facebook", "POST", "", FacebookUtil.formatForPost(obj).toString());
+        /*AsyncTask apiCommunicator = new ApiCommunicator(new AsyncResponse() {
             @Override
             public void processFinish(JSONObject obj) {
                 try {
@@ -184,43 +208,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
                 }
 
             }
-        }).execute(obj);
-        /*JSONObject objToPost = FacebookUtil.formatForPost(obj);
-        ApiRequestAsync apiCommunicator = (ApiRequestAsync)new ApiRequestAsync(new AsyncResponse1() {
-            @Override
-            public void processFinish(String obj) {
-                try {
-                    JSONObject jsonObj = new JSONObject(obj);
-                    if(!jsonObj.has("error")) {
-
-                        //Log.d("error", obj.getString("error"));
-                        SaveToken(jsonObj.getString("token"));
-                        runSignupFlow(jsonObj);
-                    } else {
-                        //the user already exists
-                        //load the main Window
-
-                        runMainViewActivity(jsonObj);
-                    }
-                } catch (Exception e) {
-                    int k = 1;
-                    int y = 7;
-                    int u = 10;
-                    e.printStackTrace();
-                }
-
-            }
-        }, this.spinner).execute("api/appuser/facebook", "POST", "", objToPost.toString());*/
-        /*AsyncTask apiRequestAsync = new ApiRequestAsync(new AsyncResponse1() {
-            @Override
-            public void processFinish(String result) {
-
-            }
-        }, this.spinner).execute();*/
-        //ApiCommunicator.execute((JSONObject)obj);
-        //if the user is created
-        //go to signup flow
-        //else if user exists go to mainView
+        }).execute(obj);*/
     }
     private void SaveToken(String token) {
         SharedPreferences settings = PreferenceManager
