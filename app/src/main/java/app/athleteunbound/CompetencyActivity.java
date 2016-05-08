@@ -22,6 +22,7 @@ import app.athleteunbound.RESTmodels.OnSwipeTouchListener;
 public class CompetencyActivity extends AppCompatActivity {
     ListView listView3;
     JSONObject appUser;
+    JSONObject athlete;
     ArrayAdapter<String> adapter;
     RelativeLayout layout;
     List<String> competencies = new ArrayList<>();
@@ -35,6 +36,8 @@ public class CompetencyActivity extends AppCompatActivity {
         Intent intent = getIntent();
         try {
             this.appUser = new JSONObject(intent.getStringExtra("appUser")); //we also need the id??
+            this.athlete = new JSONObject(intent.getStringExtra("athlete"));
+
         } catch (Exception e) {
 
         }
@@ -101,11 +104,13 @@ public class CompetencyActivity extends AppCompatActivity {
         try {
             JSONArray arr = new JSONArray(Arrays.asList(competenciesChosen));
             this.appUser.put("competencies", arr);
+            this.athlete.put("competencies", arr);
         }catch (Exception e) {
 
         }
         Intent intent = new Intent(this, GoalActivity.class);
         intent.putExtra("appUser", this.appUser.toString());
+        intent.putExtra("athlete", this.athlete.toString());
         startActivity(intent);
     }
 }

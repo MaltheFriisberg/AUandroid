@@ -47,6 +47,7 @@ public class SportActivity extends AppCompatActivity {
     RelativeLayout layout;
     private ProgressBar spinner;
     JSONObject appUser;
+    JSONObject athlete;
     private Set<JSONObject> sportSet = new HashSet<JSONObject>();
     private HashMap<String, JSONObject> sportMap = new HashMap<>();
     @Override
@@ -133,12 +134,16 @@ public class SportActivity extends AppCompatActivity {
     private void changeToCompetencyActivity(String sportChosen) {
         try {
             this.appUser.put("sport", sportChosen);
+            this.athlete = new JSONObject();
+            this.athlete.put("sport", sportChosen);
+            this.athlete.put("appUserId", this.appUser.getString("_id"));
         } catch (Exception e) {
 
         }
 
         Intent intent = new Intent(this, CompetencyActivity.class);
         intent.putExtra("sport", sportMap.get(sportChosen).toString());
+        intent.putExtra("athlete", this.athlete.toString());
         intent.putExtra("appUser", this.appUser.toString());
         startActivity(intent);
     }
