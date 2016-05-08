@@ -30,8 +30,8 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Created by Mal on 25-04-2016.
  */
-/*public class ApiCommunicator extends AsyncTask<JSONObject, String, String> {
-    final String androidAPbaseUrl = "http://192.168.43.152:8081/";
+public class ApiCommunicator extends AsyncTask<JSONObject, String, String> {
+    final String androidAPbaseUrl = "http://192.168.0.104:8081/";
     HttpURLConnection urlConnection = null;
 
 
@@ -60,45 +60,15 @@ import cz.msebera.android.httpclient.Header;
             }
         });
         return "";
-    }*/
-    /*public static String saveNewAppUser1(JSONObject user) {
-
-        try {
-            JSONObject obj = FacebookUtil.formatForPost(user);
-            URL url = new URL("http://192.168.0.104:8081/api/appuser/facebook");
-            String toPost = obj.toString();
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("POST");
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(os, "UTF-8"));
-            writer.write(obj.toString());
-            writer.flush();
-            writer.close();
-            os.close();
-            int HttpResult =conn.getResponseCode();
-            int x = 7;
+    }
 
 
-            conn.connect();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }*/
-
-    /*@Override
+    @Override
     protected String doInBackground(JSONObject... params) {
         JSONObject user = params[0];
         try {
             JSONObject obj = FacebookUtil.formatForPost(user);
-            URL url = new URL(androidAPbaseUrl+"/api/appuser/facebook");
+            URL url = new URL(androidAPbaseUrl+"api/appuser/facebook");
             String toPost = obj.toString();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -127,17 +97,11 @@ import cz.msebera.android.httpclient.Header;
                 String test = br.readLine();
 
                 return test;
-                /*while ((br.readLine()) != null) {
-                    sb.append(br.readLine() + "\n");
-                }*/
-                //br.close();
-
-                //System.out.println(""+sb.toString());
-                //return sb.toString();
 
 
-            /*}else{
-                System.out.println(urlConnection.getResponseMessage());
+
+            }else{
+                //System.out.println(urlConnection.getResponseMessage());
             }
         } catch(Exception e) {
             e.printStackTrace();
@@ -157,4 +121,4 @@ import cz.msebera.android.httpclient.Header;
 
 
     }
-}*/
+}

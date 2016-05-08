@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.camera2.params.Face;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -34,6 +35,7 @@ import java.util.Arrays;
 import app.athleteunbound.Interfaces.AsyncResponse;
 import app.athleteunbound.Interfaces.AsyncResponse1;
 
+import app.athleteunbound.RESTapiUtils.ApiCommunicator;
 import app.athleteunbound.RESTapiUtils.ApiCommunicatorAsync;
 import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
 import app.athleteunbound.RESTapiUtils.FacebookAuthAsync;
@@ -128,7 +130,62 @@ public class LoginActivity extends Activity implements AsyncResponse {
         startActivity(intent);
     }
 
+    private void handleUserLogin(JSONObject obj) {
+
+        AsyncTask FaceBookAuthAsync = new FacebookAuthAsync(new AsyncResponse() {
+            @Override
+            public void processFinish(JSONObject obj) {
+                Log.d("auth ",obj.toString());
+                //Object success = obj.getBoolean("success");
+                try {
+                    JSONObject appUser = obj.getJSONObject("AppUser");
+                    if(obj.getBoolean("success")!=true) { //if the authentication request fails (the appUser doesnt exist)
+
+                        saveNewAppUser(appUser);
+                        //start the signup flow
+                        runSignupFlow(appUser);
+                    } else {
+
+                        String token = obj.getString("token");
+
+                        SaveToken(token);
+                        runMainViewActivity(appUser);
+
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).execute(obj);
+
+    }
     private void saveNewAppUser(JSONObject obj) {
+        AsyncTask apiCommunicator = new ApiCommunicator(new AsyncResponse() {
+            @Override
+            public void processFinish(JSONObject obj) {
+                try {
+                    if(!obj.has("error")) {
+                        //the user already exists
+                        //load the main Window
+                        //Log.d("error", obj.getString("error"));
+
+                        runSignupFlow(obj);
+                    } else {
+
+
+                        runMainViewActivity(obj);
+                    }
+                } catch (Exception e) {
+                    int k = 1;
+                    int y = 7;
+                    int u = 10;
+                    e.printStackTrace();
+                }
+
+            }
+        }).execute(obj);
+        /*JSONObject objToPost = FacebookUtil.formatForPost(obj);
         ApiRequestAsync apiCommunicator = (ApiRequestAsync)new ApiRequestAsync(new AsyncResponse1() {
             @Override
             public void processFinish(String obj) {
@@ -153,7 +210,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
                 }
 
             }
-        }, this.spinner).execute(obj.toString());
+        }, this.spinner).execute("api/appuser/facebook", "POST", "", objToPost.toString());*/
         /*AsyncTask apiRequestAsync = new ApiRequestAsync(new AsyncResponse1() {
             @Override
             public void processFinish(String result) {
@@ -164,61 +221,6 @@ public class LoginActivity extends Activity implements AsyncResponse {
         //if the user is created
         //go to signup flow
         //else if user exists go to mainView
-    }
-
-    private void handleUserLogin(JSONObject obj) {
-        /*ApiRequestAsync apiCommunicator = (ApiRequestAsync)new ApiRequestAsync(new AsyncResponse1() {
-            @Override
-            public void processFinish(String obj) {
-                try {
-                    JSONObject jsonObj = new JSONObject(obj);
-                    if(!jsonObj.has("error")) {
-
-                        //Log.d("error", obj.getString("error"));
-                        SaveToken(jsonObj.getString("token"));
-                        runSignupFlow(jsonObj);
-                    } else {
-                        //the user already exists
-                        //load the main Window
-
-                        runMainViewActivity(jsonObj);
-                    }
-                } catch (Exception e) {
-                    int k = 1;
-                    int y = 7;
-                    int u = 10;
-                    e.printStackTrace();
-                }
-
-            }
-        }, this.spinner).execute("api/appuser/authenticate/facebook", "GET", this.tokenString, obj.toString());*/
-        AsyncTask FaceBookAuthAsync = new FacebookAuthAsync(new AsyncResponse() {
-            @Override
-            public void processFinish(JSONObject obj) {
-                Log.d("auth ",obj.toString());
-                //Object success = obj.getBoolean("success");
-                try {
-                    JSONObject appUser = obj.getJSONObject("AppUser");
-                    if(obj.getBoolean("success")!=true) {
-
-                        saveNewAppUser(appUser);
-                        //start the signup flow
-                        runSignupFlow(appUser);
-                    } else {
-
-                        String token = obj.getString("token");
-
-                        SaveToken(token);
-                        runMainViewActivity(appUser);
-
-                    }
-                }catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }).execute(obj);
-
     }
     private void SaveToken(String token) {
         SharedPreferences settings = PreferenceManager

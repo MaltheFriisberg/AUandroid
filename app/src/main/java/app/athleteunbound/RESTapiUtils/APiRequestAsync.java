@@ -42,6 +42,7 @@ public class ApiRequestAsync extends AsyncTask<String, Integer, String> {
 
     @Override
     protected String doInBackground(String... params) {
+        String[] parameterArray = params;
         String subUrl = params[0];
 
         String restMethod = params[1];
@@ -59,7 +60,11 @@ public class ApiRequestAsync extends AsyncTask<String, Integer, String> {
             conn.setConnectTimeout(15000);
             conn.setRequestMethod(restMethod);
             conn.setDoInput(true);
-            //conn.setDoOutput(true);
+            if(restMethod.equals("POST")) {
+
+                conn.setDoOutput(true);
+            }
+
             int HttpResult =conn.getResponseCode();
             conn.connect();
             if(HttpResult ==HttpURLConnection.HTTP_OK){
