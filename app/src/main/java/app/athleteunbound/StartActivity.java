@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ProgressBar;
 
 import org.json.JSONObject;
@@ -31,25 +32,31 @@ public class StartActivity extends AppCompatActivity {
                     JSONObject obj;
                     try {
                         obj = new JSONObject(result);
+                        spinner.setVisibility(View.GONE);
                         // if athlete req successfull
                         if(obj.has("success") && obj.getBoolean("success")== true) {
+
                             runMainViewActivity(obj);
                         }
 
                     }catch (Exception e) {
+
                         goToLoginActivity();
                     }
+
                     goToLoginActivity();
                 }
             }, this.spinner).execute("api/athlete", "GET", token, "");
         }
     }
     private void runMainViewActivity(JSONObject obj) {
+        this.spinner.setVisibility(View.GONE);
         Intent intent = new Intent(this, MainViewActivity.class);
         intent.putExtra("AppUser",obj.toString());
         startActivity(intent);
     }
     private void goToLoginActivity() {
+        this.spinner.setVisibility(View.GONE);
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }

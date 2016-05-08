@@ -94,7 +94,8 @@ public class ApiRequestAsync extends AsyncTask<String, Integer, String> {
 
     @Override
     protected void onPostExecute(String s) {
-        delegate.processFinish(s);
         spinner.setVisibility(View.GONE);
+        delegate.processFinish(s);
+
     }
 }

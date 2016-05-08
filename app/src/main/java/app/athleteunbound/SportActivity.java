@@ -46,7 +46,7 @@ public class SportActivity extends AppCompatActivity {
     ListView listView2;
     RelativeLayout layout;
     private ProgressBar spinner;
-    String appUser;
+    JSONObject appUser;
     private Set<JSONObject> sportSet = new HashSet<JSONObject>();
     private HashMap<String, JSONObject> sportMap = new HashMap<>();
     @Override
@@ -55,7 +55,12 @@ public class SportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sport);
         Intent intent = getIntent();
-        this.appUser = intent.getStringExtra("appUser");
+        try {
+            this.appUser = new JSONObject(intent.getStringExtra("appUser"));
+        } catch (Exception e) {
+
+        }
+
         spinner = (ProgressBar)findViewById(R.id.progressBar);
         spinner.getIndeterminateDrawable().setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
         this.textView6 = (TextView)findViewById(R.id.textView6);
@@ -126,9 +131,15 @@ public class SportActivity extends AppCompatActivity {
         listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listContents));
     }
     private void changeToCompetencyActivity(String sportChosen) {
+        try {
+            this.appUser.put("sport", sportChosen);
+        } catch (Exception e) {
+
+        }
+
         Intent intent = new Intent(this, CompetencyActivity.class);
         intent.putExtra("sport", sportMap.get(sportChosen).toString());
-        intent.putExtra("appUser", this.appUser);
+        intent.putExtra("appUser", this.appUser.toString());
         startActivity(intent);
     }
 

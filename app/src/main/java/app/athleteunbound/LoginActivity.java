@@ -94,6 +94,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
         this.tokenString = settings.getString("AthleteUnboundApiToken", ""/*default value*/);
 
         spinner = (ProgressBar)findViewById(R.id.progressBar3);
+        spinner.setVisibility(View.GONE);
         }
 
 
@@ -158,7 +159,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
             public void processFinish(String result) {
 
             }
-        });*/
+        }, this.spinner).execute();*/
         //ApiCommunicator.execute((JSONObject)obj);
         //if the user is created
         //go to signup flow

@@ -24,6 +24,7 @@ public class GetAthleteAsync extends AsyncTask<JSONObject, String, String> {
     public AsyncResponse delegate = null;
 
     public GetAthleteAsync(AsyncResponse delegate){
+
         this.delegate = delegate;
     }
     @Override
@@ -75,6 +76,9 @@ public class GetAthleteAsync extends AsyncTask<JSONObject, String, String> {
 
     @Override
     protected void onPostExecute(String s) {
+
         super.onPostExecute(s);
+
+
     }
 }

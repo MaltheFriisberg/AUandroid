@@ -30,7 +30,8 @@
         <activity android:name=".SportActivity" />
         <activity android:name=".MainViewActivity" />
         <activity android:name=".CompetencyActivity" />
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".GoalActivity"></activity>
     </application>
 
 </manifest>

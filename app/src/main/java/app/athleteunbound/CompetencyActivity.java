@@ -14,6 +14,7 @@ import java.util.List;
 //hjælp her http://theopentutorials.com/tutorials/android/listview/android-multiple-selection-listview/
 public class CompetencyActivity extends AppCompatActivity {
     ListView listView3;
+    JSONObject appUser;
     ArrayAdapter<String> adapter;
     List<String> competencies = new ArrayList<>();
 
@@ -23,8 +24,12 @@ public class CompetencyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_competency);
         listView3 = (ListView)findViewById(R.id.listView3);
         Intent intent = getIntent();
+        try {
+            this.appUser = new JSONObject(intent.getStringExtra("appUser")); //we also need the id??
+        } catch (Exception e) {
 
-        String appUser = intent.getStringExtra("appUser"); //we also need the id??
+        }
+
         String sport = intent.getStringExtra("sport");
         addCompetencies(sport);
         this.adapter = new ArrayAdapter<String>(this,
