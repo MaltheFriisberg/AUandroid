@@ -35,8 +35,10 @@ public class StartActivity extends AppCompatActivity {
                         spinner.setVisibility(View.GONE);
                         // if athlete req successfull
                         if(obj.has("success") && obj.getBoolean("success")== true) {
+                            JSONObject athlete = new JSONObject(obj.getJSONObject("athlete").toString());
 
-                            runMainViewActivity(obj);
+
+                            runMainViewActivity(athlete);
                         }
 
                     }catch (Exception e) {
@@ -49,10 +51,10 @@ public class StartActivity extends AppCompatActivity {
             }, this.spinner).execute("api/athlete", "GET", token, "");
         }
     }
-    private void runMainViewActivity(JSONObject obj) {
+    private void runMainViewActivity(JSONObject athlete) {
         this.spinner.setVisibility(View.GONE);
         Intent intent = new Intent(this, MainViewActivity.class);
-        intent.putExtra("AppUser",obj.toString());
+        intent.putExtra("athlete", athlete.toString());
         startActivity(intent);
     }
     private void goToLoginActivity() {
