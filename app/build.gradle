@@ -19,6 +19,7 @@ android {
     }
     repositories {
         mavenCentral()
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -28,7 +29,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     //retrofit 2.0
     provided 'org.glassfish:javax.annotation:10.0-b28'
-
+    compile 'com.github.PhilJay:MPAndroidChart:v2.2.4'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile 'com.jakewharton:butterknife:6.0.0'
