@@ -19,7 +19,7 @@ import app.athleteunbound.Interfaces.AsyncResponse;
  */
 public class FacebookAuthAsync extends AsyncTask<JSONObject, String, JSONObject>{
     HttpURLConnection urlConnection = null;
-
+    final String baseUrlKU = "http://192.168.0.115:8081/";
     String homeUrl = "http://192.168.0.104:8081/";
     final String androidAPbaseUrl = "http://192.168.43.152:8081/";
     public AsyncResponse delegate = null;
@@ -32,7 +32,7 @@ public class FacebookAuthAsync extends AsyncTask<JSONObject, String, JSONObject>
 
         try {
             JSONObject obj = params[0];
-            URL url = new URL(homeUrl+"api/appuser/authenticate/facebook");
+            URL url = new URL(baseUrlKU+"api/appuser/authenticate/facebook");
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestProperty("facebookId", params[0].getString("id"));

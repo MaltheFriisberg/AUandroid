@@ -32,6 +32,7 @@ import cz.msebera.android.httpclient.Header;
  */
 public class ApiCommunicator extends AsyncTask<JSONObject, String, String> {
     final String androidAPbaseUrl = "http://192.168.0.104:8081/";
+    final String baseUrlKU = "http://192.168.0.115:8081/";
     HttpURLConnection urlConnection = null;
 
 
@@ -45,7 +46,7 @@ public class ApiCommunicator extends AsyncTask<JSONObject, String, String> {
         SyncHttpClient client = new SyncHttpClient();
 
         String result;
-        client.post(androidAPbaseUrl+"api/appuser", new JsonHttpResponseHandler() {
+        client.post(baseUrlKU+"api/appuser", new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
 
