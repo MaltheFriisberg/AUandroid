@@ -69,7 +69,7 @@ public class ApiCommunicator extends AsyncTask<JSONObject, String, String> {
         JSONObject user = params[0];
         try {
             JSONObject obj = FacebookUtil.formatForPost(user);
-            URL url = new URL(androidAPbaseUrl+"api/appuser/facebook");
+            URL url = new URL(IPFactory.getBaseUrlHome()+"api/appuser/facebook");
             String toPost = obj.toString();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");

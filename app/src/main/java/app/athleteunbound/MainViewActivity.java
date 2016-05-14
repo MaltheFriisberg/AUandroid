@@ -1,10 +1,13 @@
 package app.athleteunbound;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -14,17 +17,24 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import app.athleteunbound.Interfaces.AsyncResponse;
 import app.athleteunbound.Interfaces.AsyncResponse1;
 import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
+import app.athleteunbound.RESTapiUtils.PostPutRequestAsync;
+import app.athleteunbound.RESTmodels.Athlete;
 
 public class MainViewActivity extends AppCompatActivity {
     private RadarChart chart;
     private ProgressBar spinner;
+    //private JSONObject athlete;
+    private JSONObject competencyRatings;
+    private Athlete athlete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,24 +43,10 @@ public class MainViewActivity extends AppCompatActivity {
         this.spinner = (ProgressBar)findViewById(R.id.progressBar4);
         this.spinner.setVisibility(View.GONE);
         this.chart = (RadarChart) findViewById(R.id.chart);
-        Intent intent = getIntent();
-        String athlete = intent.getStringExtra("athlete");
-        //String appUser = intent.getStringExtra("appUSer");
-        setUpRadarChart(new JSONObject());
-
-
-
+        setUpRadarChart();
     }
-    private void setUpRadarChart(JSONObject athlete) {
 
-        /*AsyncTask getAthlete = new ApiRequestAsync(new AsyncResponse1() {
-            @Override
-            public void processFinish(String result) {
-
-            }
-        }, this.spinner).execute();*/
-
-
+    private void setUpRadarChart() {
 
         chart.setWebLineWidth(0);
 
@@ -70,9 +66,9 @@ public class MainViewActivity extends AppCompatActivity {
         entries2.add(new Entry(4f, 4));
         entries2.add(new Entry(8f, 5));
 
-        RadarDataSet dataset_comp1 = new RadarDataSet(entries, "Company1");
+        RadarDataSet dataset_comp1 = new RadarDataSet(entries, "this week");
 
-        RadarDataSet dataset_comp2 = new RadarDataSet(entries2, "Company2");
+        RadarDataSet dataset_comp2 = new RadarDataSet(entries2, "lastweek");
 
         dataset_comp1.setColor(Color.CYAN);
 
@@ -86,7 +82,9 @@ public class MainViewActivity extends AppCompatActivity {
         dataSets.add(dataset_comp1);
         dataSets.add(dataset_comp2);
 
-        List<String> labels = new ArrayList<String>();
+        List<String> labels = new ArrayList<>();
+
+
         labels.add("Communication");
         labels.add("Technical Knowledge");
         labels.add("Team Player");
@@ -101,4 +99,5 @@ public class MainViewActivity extends AppCompatActivity {
         RadarData data = new RadarData(labels, dataSets);
         this.chart.setData(data);
     }
+
 }

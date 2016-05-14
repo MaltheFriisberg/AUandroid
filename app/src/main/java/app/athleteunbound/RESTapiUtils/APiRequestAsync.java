@@ -51,7 +51,7 @@ public class ApiRequestAsync extends AsyncTask<String, Integer, String> {
         String postData = params[3];
         try {
 
-            URL url = new URL(baseUrlKU+subUrl);
+            URL url = new URL(IPFactory.getBaseUrlHome()+subUrl);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             //conn.setRequestProperty("fb-access-token", params[0]); //token in the header
@@ -60,7 +60,7 @@ public class ApiRequestAsync extends AsyncTask<String, Integer, String> {
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
             conn.setRequestMethod(restMethod);
-            conn.setDoInput(true);
+             conn.setDoInput(true);
             if(restMethod.equals("POST")) {
 
                 conn.setDoOutput(true);

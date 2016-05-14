@@ -51,6 +51,12 @@ public class StartActivity extends AppCompatActivity {
             }, this.spinner).execute("api/athlete", "GET", token, "");
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private void runMainViewActivity(JSONObject athlete) {
         this.spinner.setVisibility(View.GONE);
         Intent intent = new Intent(this, MainViewActivity.class);

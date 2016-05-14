@@ -67,6 +67,9 @@ public class LoginActivity extends Activity implements AsyncResponse {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(hasToken()) {
+            runMainViewActivity(new JSONObject());
+        }
         //setContentView(R.layout.activity_login);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
@@ -84,8 +87,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
         FbloginButtonConfig config = new FbloginButtonConfig(new AsyncResponse() {
             @Override
             public void processFinish(JSONObject obj) {
-                int k = 1;
-                int f = 7;
+
                 handleUserLogin((JSONObject)obj);
 
 
@@ -98,10 +100,45 @@ public class LoginActivity extends Activity implements AsyncResponse {
 
         spinner = (ProgressBar)findViewById(R.id.progressBar3);
         spinner.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        if(settings.contains("AthleteUnboundApiToken")) {
+            try {
+                runMainViewActivity(new JSONObject(""));
+            }catch (Exception e) {
+
+            }
+
         }
 
+    }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        super.onResume();
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        if(hasToken()) {
+            try {
+                runMainViewActivity(new JSONObject(""));
+            }catch (Exception e) {
 
+            }
+
+        }
+    }
+
+    protected boolean hasToken() {
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        return settings.contains("AthleteUnboundApiToken");
+    }
 
     public void onClickLoginBtn(View v) {
         //getApplicationContext();

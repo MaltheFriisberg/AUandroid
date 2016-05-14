@@ -23,7 +23,7 @@ import cz.msebera.android.httpclient.client.methods.RequestBuilder;
 public class ApiCommunicatorAsync {
     //the virtual machine can not connect to API on "localhost"
     //When testing on localhost, lookup /cmd/ipconfig
-    String baseUrl = "http://192.168.0.104:8081";
+    String baseUrl = "http://192.168.0.102:8081";
     JsonObject toReturn;
     public JsonObject Login(String username, String password) {
         RequestParams params = new RequestParams();
@@ -33,7 +33,7 @@ public class ApiCommunicatorAsync {
         client.addHeader("username", username);
         client.addHeader("password", password);
 
-        client.get("http://192.168.0.104:8081/api/appuser/authenticate", new AsyncHttpResponseHandler() {
+        client.get("http://192.168.0.102:8081/api/appuser/authenticate", new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 String breakpoint;
