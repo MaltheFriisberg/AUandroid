@@ -2,8 +2,10 @@ package app.athleteunbound.DatabaseHelpers;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import app.athleteunbound.RESTmodels.Sport;
 
 /**
  * Created by Mal on 15-05-2016.
@@ -97,10 +101,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_SPORT_NAME + " TEXT,"
             +KEY_CREATED_AT + " date default CURRENT_DATE" + ")";
     private static final String CREATE_TABLE_COMPETENCIES = "CREATE TABLE "+ TABLE_COMPETENCIES
-            + "("+KEY_ID+ " INTEGER PRIMARY KEY" + KEY_COMPETENCY_NAME + " TEXT,"
+            + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_COMPETENCY_NAME + " TEXT,"
             +KEY_CREATED_AT + " DATETIME" + ")";
     private static final String CREATE_TABLE_SPORT_COMPETENCIES = "CREATE TABLE "+ TABLE_SPORT_COMPETENCIES
-            + "("+KEY_ID+ " INTEGER PRIMARY KEY" + KEY_SPORT_ID + " INTEGER," + KEY_COMPETENCY_ID + " INTEGER,"
+            + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_SPORT_ID + " INTEGER," + KEY_COMPETENCY_ID + " INTEGER,"
             +KEY_CREATED_AT + " DATETIME" + ")";
 
     public DatabaseHelper(Context context) {
@@ -109,33 +113,56 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        String test = CREATE_TABLE_SPORT;
+        String test1 = CREATE_TABLE_COMPETENCIES;
+        String test2 = CREATE_TABLE_SPORT_COMPETENCIES;
+        try {
+            // creating required tables
+            db.execSQL(CREATE_TABLE_SPORT);
+            db.execSQL(CREATE_TABLE_COMPETENCIES);
+            db.execSQL(CREATE_TABLE_SPORT_COMPETENCIES);
 
-        // creating required tables
-        db.execSQL(CREATE_TABLE_SPORT);
-        db.execSQL(CREATE_TABLE_COMPETENCIES);
-        db.execSQL(CREATE_TABLE_SPORT_COMPETENCIES);
+        }catch (Exception e) {
+            Log.d("onCreate ", e.toString());
+        }
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        String test = CREATE_TABLE_SPORT;
+        String test1 = CREATE_TABLE_COMPETENCIES;
+        String test2 = CREATE_TABLE_SPORT_COMPETENCIES;
         // on upgrade drop older tables
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_SPORT);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_COMPETENCIES);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_SPORT_COMPETENCIES);
+        try {
+            db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_SPORT);
+            db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_COMPETENCIES);
+            db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_SPORT_COMPETENCIES);
+        }catch (Exception e) {
+            Log.d("onUpgrade", e.toString());
+            e.printStackTrace();
+        }
+
 
         // create new tables
         onCreate(db);
     }
     public long createSport(JsonObject sport) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_SPORT_NAME, sport.get("name").toString());
-        //insert row
-        long sport_id = db.insert(TABLE_SPORTS, null, values);
-        //handle the competencies on the sport object, insert in joined table
-        createSportCompetencies(sport, sport_id);
-        return sport_id;
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(KEY_SPORT_NAME, sport.get("name").toString());
+            //insert row
+            long sport_id = db.insert(TABLE_SPORTS, null, values);
+            //handle the competencies on the sport object, insert in joined table
+            createSportCompetencies(sport, sport_id);
+            return sport_id;
+        }catch (Exception e) {
+            Log.d("Exception CreateSport", e.toString());
+            e.printStackTrace();
+        }
+        return 0;
+
     }
 
     public void createSportCompetencies(JsonObject sport, long sport_id) {
@@ -164,7 +191,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(KEY_COMPETENCY_ID, competencyPK);
             db.insert(TABLE_SPORT_COMPETENCIES, null, values);
         }
-        
+
+    }
+    public List<Sport> getAllSports() {
+        List<Sport> sports = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM " + TABLE_SPORTS;
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Sport sport = new Sport();
+                sport.setPrimaryKey(c.getInt(c.getColumnIndex(KEY_ID)));
+                sport.setName(c.getString(c.getColumnIndex(KEY_SPORT_NAME)));
+                sport.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+                sports.add(sport);
+            } while (c.moveToNext());
+        }
+
+        return sports;
     }
 
 

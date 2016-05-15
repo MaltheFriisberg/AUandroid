@@ -18,7 +18,7 @@ import app.athleteunbound.Interfaces.AsyncResponse;
  * Created by Mal on 08-05-2016.
  */
 public class PostPutRequestAsync extends AsyncTask<String, String, String> {
-    String baseUrl = "http://192.168.0.104:8081/";
+    String baseUrlHome = "http://192.168.0.102:8081/";
     final String baseUrlKU = "http://192.168.0.115:8081/";
     HttpURLConnection urlConnection = null;
 
@@ -41,7 +41,7 @@ public class PostPutRequestAsync extends AsyncTask<String, String, String> {
         try {
             JSONObject toPost = new JSONObject(params[3]);
             JSONObject obj = FacebookUtil.formatForPost(toPost);
-            URL url = new URL(baseUrlKU+subUrl);
+            URL url = new URL(baseUrlHome+subUrl);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             if(jsonWebToken.length() > 0 && !jsonWebToken.equals("")) {

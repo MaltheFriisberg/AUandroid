@@ -21,7 +21,7 @@ public class ApiRequestAsync extends AsyncTask<String, Integer, String> {
     HttpURLConnection urlConnection = null;
     public AsyncResponse1 delegate = null;
     final String baseUrlKU = "http://192.168.0.115:8081/";
-    final String baseUrlHome = "http://192.168.0.104:8081/";
+    final String baseUrlHome = "http://192.168.0.102:8081/";
     final String androidAPbaseUrl = "http://192.168.43.152:8081/";
     private ProgressBar spinner;
     public ApiRequestAsync(AsyncResponse1 delegate, ProgressBar spinner) {

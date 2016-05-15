@@ -20,6 +20,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -33,10 +38,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import app.athleteunbound.DatabaseHelpers.DatabaseHelper;
 import app.athleteunbound.Interfaces.AsyncResponse;
 import app.athleteunbound.Interfaces.AsyncResponse1;
 import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
 import app.athleteunbound.RESTmodels.OnSwipeTouchListener;
+import app.athleteunbound.RESTmodels.Sport;
 
 public class SportActivity extends AppCompatActivity {
     TextView textView3;
@@ -77,7 +84,14 @@ public class SportActivity extends AppCompatActivity {
             @Override
             public void processFinish(String result) {
                 try {
-
+                    //JsonArray arr = new JsonArray();
+                    JsonParser parser = new JsonParser();
+                    JsonElement tradeElement = parser.parse(result);
+                    JsonArray trade = tradeElement.getAsJsonArray();
+                    DatabaseHelper helper = new DatabaseHelper(getApplicationContext());
+                    for(JsonElement sport : trade) {
+                        helper.createSport(sport.getAsJsonObject());
+                    }
                     JSONArray array = new JSONArray(result);
                     populateListView(array);
                 } catch (Exception e) {
@@ -111,7 +125,9 @@ public class SportActivity extends AppCompatActivity {
                 //Go to the CompetenciesActivity
             }
             public void onSwipeRight() {
-                Toast.makeText(SportActivity.this, "Swiped right", Toast.LENGTH_SHORT).show();
+                DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+                List<Sport> sports = db.getAllSports();
+                Toast.makeText(SportActivity.this, sports.get(0).toString(), Toast.LENGTH_LONG).show();
             }
         });
     }
