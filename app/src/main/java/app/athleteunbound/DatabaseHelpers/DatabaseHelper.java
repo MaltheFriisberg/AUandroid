@@ -75,7 +75,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //sport table create statement
     private static final String CREATE_TABLE_SPORT = "CREATE TABLE "+ TABLE_SPORTS
             + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_SPORT_NAME + " TEXT UNIQUE,"
-            +KEY_CREATED_AT + " date default CURRENT_DATE" +", UNIQUE(name) ON CONFLICT REPLACE"+ ")";
+            +KEY_CREATED_AT + " date default CURRENT_DATE"+")"; // UNIQUE(name) ON CONFLICT REPLACE
     private static final String CREATE_TABLE_COMPETENCIES = "CREATE TABLE "+ TABLE_COMPETENCIES
             + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_COMPETENCY_NAME + " TEXT UNIQUE,"
             +KEY_CREATED_AT + " DATETIME" + ")";
@@ -198,7 +198,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 sports.add(sport);
             } while (c.moveToNext());
         }
-
+        c.close();
         return sports;
     }
     public void deleteAllSports() {
@@ -210,8 +210,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         db.execSQL(deleteQuery);
     }
-    public List<Competency> getCompetencies() {
+    public List<Competency> getCompetencies(String sportId) {
+        Log.d("GetCompetencies ", sportId);
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            String query = "SELECT * FROM "+TABLE_SPORT_COMPETENCIES+ " LEFT JOIN "+ TABLE_COMPETENCIES +
+                    " ON  sportCompetencies.competencyId = competencies.id"; //WHERE sportCompetencies.sportId="+sportId
+            Cursor c = db.rawQuery(query, null);
+
+            if (c.moveToFirst()) {
+                do {
+                    String sportId1 =c.getString(c.getColumnIndex("sportId"));
+                    Competency competency = new Competency();
+                    competency.setPrimaryKey(c.getInt(c.getColumnIndex(KEY_ID)));
+                    //sport.setName(c.getString(c.getColumnIndex(KEY_SPORT_NAME)));
+                    //sport.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+                    //sports.add(sport);
+                } while (c.moveToNext());
+            }
+            c.close();
+        }catch (Exception e) {
+            Log.d("getCompetencies ", e.toString());
+        }
+
         return new ArrayList<>();
+    }
+    public void test() {
+        Log.d("test ", "DbHelper.test()");
     }
 
 

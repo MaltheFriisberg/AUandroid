@@ -1,5 +1,7 @@
 package app.athleteunbound.RESTmodels;
 
+import org.json.JSONObject;
+
 /**
  * Created by Mal on 15-05-2016.
  */
@@ -49,5 +51,17 @@ public class Sport {
                 ", name='" + name + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 '}';
+    }
+    public JSONObject getJSONobject() {
+        try {
+            JSONObject toReturn = new JSONObject();
+            toReturn.put("_androidId", this.getPrimaryKey());
+            toReturn.put("name", this.getName());
+            toReturn.put("createdAt", this.getCreatedAt());
+            return toReturn;
+        }catch (Exception e) {
+
+        }
+        return new JSONObject();
     }
 }

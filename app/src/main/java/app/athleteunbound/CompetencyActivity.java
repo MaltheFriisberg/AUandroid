@@ -3,6 +3,7 @@ package app.athleteunbound;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import app.athleteunbound.DatabaseHelpers.DatabaseHelper;
+import app.athleteunbound.RESTmodels.Competency;
 import app.athleteunbound.RESTmodels.OnSwipeTouchListener;
 
 //hjælp her http://theopentutorials.com/tutorials/android/listview/android-multiple-selection-listview/
@@ -26,10 +29,12 @@ public class CompetencyActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     RelativeLayout layout;
     List<String> competencies = new ArrayList<>();
+    DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.db = new DatabaseHelper(getApplicationContext());
         setContentView(R.layout.activity_competency);
         this.layout = (RelativeLayout)findViewById(R.id.RelativeLayoutCompetencies);
         listView3 = (ListView)findViewById(R.id.listView3);
@@ -42,7 +47,7 @@ public class CompetencyActivity extends AppCompatActivity {
 
         }
 
-        String sport = intent.getStringExtra("sport");
+        String sport = intent.getStringExtra("sportChosen");
         addCompetencies(sport);
         this.adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, this.competencies);
@@ -54,19 +59,27 @@ public class CompetencyActivity extends AppCompatActivity {
         int k = x+y;
     }
     private void addCompetencies(String sportJson) {
+        Log.d("addCompetencies", "");
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        dbHelper.test();
         try {
             JSONObject appUser = new JSONObject(sportJson);
-            JSONArray competenciesJson = appUser.getJSONArray("competencies");
-
-            if (competenciesJson != null) {
+            //JSONArray competenciesJson = appUser.getJSONArray("competencies");
+            this.db.test();
+            List<Competency> xy = dbHelper.getCompetencies(appUser.getString("_androidId"));
+            List<Competency> competencies = this.db.getCompetencies(appUser.getString("_androidId"));
+            int x = 1;
+            int y = 2;
+            int k = x+y;
+            /*if (competenciesJson != null) {
                 int len = competenciesJson.length();
                 for (int i=0;i<len;i++){
                     JSONObject competency = (JSONObject) competenciesJson.get(i);
                     this.competencies.add(competency.getString("name"));
                 }
-            }
+            }*/
         }catch (Exception e) {
-
+            Log.d("addCompetencies ", e.toString());
         }
     }
     private void configureTouchListener() {
@@ -96,6 +109,12 @@ public class CompetencyActivity extends AppCompatActivity {
                     Toast.makeText(CompetencyActivity.this, "You have to pick 4 minimum", Toast.LENGTH_SHORT).show();
                 }
 
+
+            }
+
+            @Override
+            public void onSwipeRight() {
+                //db.getCompetencies()
 
             }
         });

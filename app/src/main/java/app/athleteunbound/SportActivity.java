@@ -195,7 +195,10 @@ public class SportActivity extends AppCompatActivity implements BgProcessingResu
         listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listContents));
     }
     private void changeToCompetencyActivity(String sportChosen) {
+        Sport sport = sportMap1.get(sportChosen);
         try {
+
+
             this.appUser.put("sport", sportChosen);
             this.athlete = new JSONObject();
             this.athlete.put("sport", sportChosen);
@@ -206,8 +209,10 @@ public class SportActivity extends AppCompatActivity implements BgProcessingResu
 
         Intent intent = new Intent(this, CompetencyActivity.class);
         intent.putExtra("sport", sportMap1.get(sportChosen).toString());
-        intent.putExtra("athlete", this.athlete.toString());
-        intent.putExtra("appUser", this.appUser.toString());
+//        intent.putExtra("athlete", this.athlete.toString());
+  //      intent.putExtra("appUser", this.appUser.toString());
+        intent.putExtra("sportChosen", sport.getJSONobject().toString());
+        //intent.putExtra("SportObject", this.sportMap1.get(sportChosen).toString());
         startActivity(intent);
     }
 
