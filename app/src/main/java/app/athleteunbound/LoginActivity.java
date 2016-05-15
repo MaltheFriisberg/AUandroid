@@ -67,9 +67,9 @@ public class LoginActivity extends Activity implements AsyncResponse {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(hasToken()) {
+        /*if(hasToken()) {
             runMainViewActivity(new JSONObject());
-        }
+        }*/
         //setContentView(R.layout.activity_login);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
