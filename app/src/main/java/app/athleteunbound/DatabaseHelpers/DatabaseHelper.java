@@ -1,8 +1,20 @@
 package app.athleteunbound.DatabaseHelpers;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Mal on 15-05-2016.
@@ -83,7 +95,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //sport table create statement
     private static final String CREATE_TABLE_SPORT = "CREATE TABLE "+ TABLE_SPORTS
             + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_SPORT_NAME + " TEXT,"
-            +KEY_CREATED_AT + " DATETIME" + ")";
+            +KEY_CREATED_AT + " date default CURRENT_DATE" + ")";
     private static final String CREATE_TABLE_COMPETENCIES = "CREATE TABLE "+ TABLE_COMPETENCIES
             + "("+KEY_ID+ " INTEGER PRIMARY KEY" + KEY_COMPETENCY_NAME + " TEXT,"
             +KEY_CREATED_AT + " DATETIME" + ")";
@@ -115,4 +127,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // create new tables
         onCreate(db);
     }
+    public long createSport(JsonObject sport) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_SPORT_NAME, sport.get("name").toString());
+        //insert row
+        long sport_id = db.insert(TABLE_SPORTS, null, values);
+        //handle the competencies on the sport object, insert in joined table
+        createSportCompetencies(sport, sport_id);
+        return sport_id;
+    }
+
+    public void createSportCompetencies(JsonObject sport, long sport_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        //HashMap to hold the primary keys and values for the joined table
+        List<Integer> competencyPKs = new ArrayList<>();
+        JsonArray arr = sport.getAsJsonArray("competencies");
+        Date d = new Date(System.currentTimeMillis());
+        for(final JsonElement competency : arr) {
+            //save as competencies
+            ContentValues values = new ContentValues();
+            values.put(KEY_COMPETENCY_NAME, competency.toString());
+
+            long competency_id = db.insert(TABLE_COMPETENCIES, null, values);
+            //save the primary keys for each created competency in list
+            competencyPKs.add((int)competency_id);
+        }
+        //add all the list primary keys in the joined table SPORT_COMPETENCIES
+        createSportCompetency(competencyPKs, sport_id);
+    }
+    public void createSportCompetency(List<Integer> competencyPKs, long sportId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        for(Integer competencyPK : competencyPKs) {
+            ContentValues values = new ContentValues();
+            values.put(KEY_SPORT_ID, sportId);
+            values.put(KEY_COMPETENCY_ID, competencyPK);
+            db.insert(TABLE_SPORT_COMPETENCIES, null, values);
+        }
+        
+    }
+
+
 }
