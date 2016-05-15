@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,10 +44,13 @@ import app.athleteunbound.DatabaseHelpers.DatabaseHelper;
 import app.athleteunbound.Interfaces.AsyncResponse;
 import app.athleteunbound.Interfaces.AsyncResponse1;
 import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
+import app.athleteunbound.RESTapiUtils.Services.BgProcessingResultReceiver;
+import app.athleteunbound.RESTapiUtils.Services.SportService;
 import app.athleteunbound.RESTmodels.OnSwipeTouchListener;
 import app.athleteunbound.RESTmodels.Sport;
 
-public class SportActivity extends AppCompatActivity {
+public class SportActivity extends AppCompatActivity implements BgProcessingResultReceiver.Receiver {
+    DatabaseHelper db;
     TextView textView3;
     TextView textView5;
     TextView textView6;
@@ -57,10 +62,27 @@ public class SportActivity extends AppCompatActivity {
     JSONObject athlete;
     private Set<JSONObject> sportSet = new HashSet<JSONObject>();
     private HashMap<String, JSONObject> sportMap = new HashMap<>();
+    private HashMap<String, Sport> sportMap1 = new HashMap<>();
+    private List<Sport> sportList = new ArrayList<>();
+    public BgProcessingResultReceiver mReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        //getApplicationContext().deleteDatabase("AthleteManager"); //DELETES the DB only use when changing the schema
         super.onCreate(savedInstanceState);
+        mReceiver = new BgProcessingResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
+        this.db = new DatabaseHelper(getApplicationContext());
+        if(savedInstanceState == null){
+            // everything else that doesn't update UI
+            final Intent serviceIntent = new Intent(Intent.ACTION_SYNC, null, this, SportService.class);
+            serviceIntent.putExtra("subUrl", "api/sport");
+            serviceIntent.putExtra("restMethod", "GET");
+            serviceIntent.putExtra("receiver", this.mReceiver);
+            //serviceIntent.putExtra("DatabaseHelper", this.db);
+            //db.deleteAllSports();
+            //db.
+            startService(serviceIntent);
+        }
         setContentView(R.layout.activity_sport);
         Intent intent = getIntent();
         try {
@@ -71,6 +93,7 @@ public class SportActivity extends AppCompatActivity {
 
         spinner = (ProgressBar)findViewById(R.id.progressBar);
         spinner.getIndeterminateDrawable().setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
+        spinner.setVisibility(View.GONE);
         this.textView6 = (TextView)findViewById(R.id.textView6);
         this.listView = (ListView)findViewById(R.id.listView);
         this.listView2 = (ListView)findViewById(R.id.listView2);
@@ -79,27 +102,27 @@ public class SportActivity extends AppCompatActivity {
                 .getDefaultSharedPreferences(this);
         String tokenString = settings.getString("AthleteUnboundApiToken", ""/*default value*/);
 
-        ApiRequestAsync sports = (ApiRequestAsync) new ApiRequestAsync(new AsyncResponse1(){
+
+        //populateListView();
+
+        /*ApiRequestAsync sports = (ApiRequestAsync) new ApiRequestAsync(new AsyncResponse1(){
 
             @Override
             public void processFinish(String result) {
                 try {
-                    //JsonArray arr = new JsonArray();
-                    JsonParser parser = new JsonParser();
-                    JsonElement tradeElement = parser.parse(result);
-                    JsonArray trade = tradeElement.getAsJsonArray();
+                    JSONArray arr = new JSONArray(result);
                     DatabaseHelper helper = new DatabaseHelper(getApplicationContext());
-                    for(JsonElement sport : trade) {
-                        helper.createSport(sport.getAsJsonObject());
+                    for(int i = 0; i < arr.length(); i++) {
+                        helper.deleteAllSports();
                     }
                     JSONArray array = new JSONArray(result);
-                    populateListView(array);
+                    populateListView();
                 } catch (Exception e) {
 
                 }
 
             }
-        }, this.spinner).execute("api/sport", "GET", tokenString, "");
+        }, this.spinner).execute("api/sport", "GET", tokenString, "");*/
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -127,13 +150,37 @@ public class SportActivity extends AppCompatActivity {
             public void onSwipeRight() {
                 DatabaseHelper db = new DatabaseHelper(getApplicationContext());
                 List<Sport> sports = db.getAllSports();
-                Toast.makeText(SportActivity.this, sports.get(0).toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(SportActivity.this, sports.get(0).toString() +" "+ sports.size(), Toast.LENGTH_LONG).show();
             }
         });
     }
-    private void populateListView(JSONArray array) {
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    private void populateListView() {
+        List<Sport> sports = db.getAllSports();
         List<String> listContents = new ArrayList<>();
-        for(int i = 0; i < array.length(); i++) {
+        for(Sport sport : sports) {
+            sportList.add(sport);
+            sportMap1.put(sport.getName(), sport);
+            listContents.add(sport.getName());
+
+        }
+        /*for(int i = 0; i < sports.length(); i++) {
             try {
                 String obj = array.getString(i);
                 JSONObject jsonObject = new JSONObject(array.getString(i));
@@ -144,7 +191,7 @@ public class SportActivity extends AppCompatActivity {
 
             }
 
-        }
+        }*/
         listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listContents));
     }
     private void changeToCompetencyActivity(String sportChosen) {
@@ -154,14 +201,18 @@ public class SportActivity extends AppCompatActivity {
             this.athlete.put("sport", sportChosen);
             this.athlete.put("appUserId", this.appUser.getString("_id"));
         } catch (Exception e) {
-
+            Log.d(" ",e.toString());
         }
 
         Intent intent = new Intent(this, CompetencyActivity.class);
-        intent.putExtra("sport", sportMap.get(sportChosen).toString());
+        intent.putExtra("sport", sportMap1.get(sportChosen).toString());
         intent.putExtra("athlete", this.athlete.toString());
         intent.putExtra("appUser", this.appUser.toString());
         startActivity(intent);
     }
 
+    @Override
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+        populateListView();
+    }
 }

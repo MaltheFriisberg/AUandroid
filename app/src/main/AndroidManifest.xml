@@ -27,11 +27,16 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".SportActivity" />
+        <activity android:name=".SportActivity"
+            android:configChanges="keyboardHidden|orientation"/>
         <activity android:name=".MainViewActivity" />
         <activity android:name=".CompetencyActivity" />
         <activity android:name=".LoginActivity" />
-        <activity android:name=".GoalActivity"></activity>
+        <activity android:name=".GoalActivity" />
+
+        <service
+            android:name=".RESTapiUtils.Services.SportService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

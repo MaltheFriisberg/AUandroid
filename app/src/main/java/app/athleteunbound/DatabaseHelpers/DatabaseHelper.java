@@ -11,6 +11,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,13 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import app.athleteunbound.RESTmodels.Competency;
 import app.athleteunbound.RESTmodels.Sport;
 
 /**
  * Created by Mal on 15-05-2016.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
-
+    //getApplicationContext().deleteDatabase("AthleteManager"); //DELETES the DB only use when changing the schema (DB MUST BE CLOSED)
     // Logcat tag
     private static final String LOG = "DatabaseHelper";
 
@@ -68,40 +72,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_SPORT_ID = "sportId";
     private static final String KEY_COMPETENCY_ID = "competencyId";
 
-    // NOTES Table - column nmaes
-    /*private static final String KEY_TODO = "todo";
-    private static final String KEY_STATUS = "status";
-
-    // TAGS Table - column names
-    private static final String KEY_TAG_NAME = "tag_name";
-
-    // NOTE_TAGS Table - column names
-    private static final String KEY_TODO_ID = "todo_id";
-    private static final String KEY_TAG_ID = "tag_id";*/
-
-    // Table Create Statements
-    // Todo table create statement
-    /*private static final String CREATE_TABLE_TODO = "CREATE TABLE "
-            + TABLE_APPUSER + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TODO
-            + " TEXT," + KEY_STATUS + " INTEGER," + KEY_CREATED_AT
-            + " DATETIME" + ")";
-
-    // Tag table create statement
-    private static final String CREATE_TABLE_TAG = "CREATE TABLE " + TABLE_TAG
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TAG_NAME + " TEXT,"
-            + KEY_CREATED_AT + " DATETIME" + ")";
-
-    // todo_tag table create statement
-    private static final String CREATE_TABLE_TODO_TAG = "CREATE TABLE "
-            + TABLE_TODO_TAG + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + KEY_TODO_ID + " INTEGER," + KEY_TAG_ID + " INTEGER,"
-            + KEY_CREATED_AT + " DATETIME" + ")";*/
     //sport table create statement
     private static final String CREATE_TABLE_SPORT = "CREATE TABLE "+ TABLE_SPORTS
-            + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_SPORT_NAME + " TEXT,"
-            +KEY_CREATED_AT + " date default CURRENT_DATE" + ")";
+            + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_SPORT_NAME + " TEXT UNIQUE,"
+            +KEY_CREATED_AT + " date default CURRENT_DATE" +", UNIQUE(name) ON CONFLICT REPLACE"+ ")";
     private static final String CREATE_TABLE_COMPETENCIES = "CREATE TABLE "+ TABLE_COMPETENCIES
-            + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_COMPETENCY_NAME + " TEXT,"
+            + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_COMPETENCY_NAME + " TEXT UNIQUE,"
             +KEY_CREATED_AT + " DATETIME" + ")";
     private static final String CREATE_TABLE_SPORT_COMPETENCIES = "CREATE TABLE "+ TABLE_SPORT_COMPETENCIES
             + "("+KEY_ID+ " INTEGER PRIMARY KEY," + KEY_SPORT_ID + " INTEGER," + KEY_COMPETENCY_ID + " INTEGER,"
@@ -147,13 +123,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // create new tables
         onCreate(db);
     }
-    public long createSport(JsonObject sport) {
+    public synchronized long createSport(JSONObject sport) {
+        String query = "INSERT OR IGNORE INTO bookmarks(users_id, lessoninfo_id) VALUES(123, 456)";
         try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
+
             values.put(KEY_SPORT_NAME, sport.get("name").toString());
             //insert row
-            long sport_id = db.insert(TABLE_SPORTS, null, values);
+            long sport_id = db.insertOrThrow(TABLE_SPORTS, null, values);
             //handle the competencies on the sport object, insert in joined table
             createSportCompetencies(sport, sport_id);
             return sport_id;
@@ -165,31 +143,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void createSportCompetencies(JsonObject sport, long sport_id) {
+    public synchronized void createSportCompetencies(JSONObject sport, long sport_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         //HashMap to hold the primary keys and values for the joined table
         List<Integer> competencyPKs = new ArrayList<>();
-        JsonArray arr = sport.getAsJsonArray("competencies");
-        Date d = new Date(System.currentTimeMillis());
-        for(final JsonElement competency : arr) {
-            //save as competencies
-            ContentValues values = new ContentValues();
-            values.put(KEY_COMPETENCY_NAME, competency.toString());
+        try {
+            JSONArray arr = sport.getJSONArray("competencies");
+            Date d = new Date(System.currentTimeMillis());
+            for(int i = 0; i < arr.length(); i++) {
+                //save as competencies
+                JSONObject competency = arr.getJSONObject(i);
+                ContentValues values = new ContentValues();
+                values.put(KEY_COMPETENCY_NAME, competency.toString());
 
-            long competency_id = db.insert(TABLE_COMPETENCIES, null, values);
-            //save the primary keys for each created competency in list
-            competencyPKs.add((int)competency_id);
+                long competency_id = db.insertOrThrow(TABLE_COMPETENCIES, null, values);
+
+                //save the primary keys for each created competency in list
+                competencyPKs.add((int)competency_id);
+            }
+            //add all the list primary keys in the joined table SPORT_COMPETENCIES
+            createSportCompetency(competencyPKs, sport_id);
+
+        }catch (Exception e) {
+
         }
-        //add all the list primary keys in the joined table SPORT_COMPETENCIES
-        createSportCompetency(competencyPKs, sport_id);
+
     }
-    public void createSportCompetency(List<Integer> competencyPKs, long sportId) {
+    public  synchronized  void createSportCompetency(List<Integer> competencyPKs, long sportId) {
         SQLiteDatabase db = this.getWritableDatabase();
         for(Integer competencyPK : competencyPKs) {
             ContentValues values = new ContentValues();
             values.put(KEY_SPORT_ID, sportId);
             values.put(KEY_COMPETENCY_ID, competencyPK);
-            db.insert(TABLE_SPORT_COMPETENCIES, null, values);
+            db.insertOrThrow(TABLE_SPORT_COMPETENCIES, null, values);
         }
 
     }
@@ -214,6 +200,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return sports;
+    }
+    public void deleteAllSports() {
+
+        String deleteQuery = "DELETE FROM " + TABLE_SPORTS;
+
+        Log.e(LOG, deleteQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.execSQL(deleteQuery);
+    }
+    public List<Competency> getCompetencies() {
+        return new ArrayList<>();
     }
 
 
