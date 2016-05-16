@@ -18,6 +18,10 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences mySPrefs =PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = mySPrefs.edit();
+        editor.remove("AthleteUnboundApiToken");
+        editor.apply();
         setContentView(R.layout.activity_start);
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(this);

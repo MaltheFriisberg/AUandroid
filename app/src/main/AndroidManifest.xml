@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SportActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,11 +28,11 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".StartActivity"
+            android:name=".SportActivity"
             android:configChanges="keyboardHidden|orientation" />
         <activity android:name=".MainViewActivity" />
         <activity android:name=".CompetencyActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".StartActivity" />
         <activity android:name=".GoalActivity" />
 
         <service

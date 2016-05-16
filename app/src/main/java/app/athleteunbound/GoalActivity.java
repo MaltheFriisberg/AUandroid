@@ -70,12 +70,12 @@ public class GoalActivity extends AppCompatActivity {
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(this);
         String apiToken = settings.getString("AthleteUnboundApiToken", "");
-        AsyncTask postAthlete = new PostPutRequestAsync(new AsyncResponse() {
+        /*AsyncTask postAthlete = new PostPutRequestAsync(new AsyncResponse() {
             @Override
             public void processFinish(JSONObject obj) {
                 Log.d("athlete posted= ", obj.toString());
             }
-        }).execute("api/athlete", "POST", apiToken, this.athlete.toString());
+        }).execute("api/athlete", "POST", apiToken, this.athlete.toString());*/
     }
 
 

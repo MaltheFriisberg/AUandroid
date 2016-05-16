@@ -8,11 +8,13 @@ import android.content.SharedPreferences;
 import android.hardware.camera2.params.Face;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -35,18 +37,21 @@ import java.util.Arrays;
 import app.athleteunbound.Interfaces.AsyncResponse;
 import app.athleteunbound.Interfaces.AsyncResponse1;
 
-import app.athleteunbound.RESTapiUtils.ApiCommunicator;
+
 import app.athleteunbound.RESTapiUtils.ApiCommunicatorAsync;
 import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
 import app.athleteunbound.RESTapiUtils.FacebookAuthAsync;
 import app.athleteunbound.RESTapiUtils.FacebookUtil;
 import app.athleteunbound.RESTapiUtils.FbloginButtonConfig;
 import app.athleteunbound.RESTapiUtils.PostPutRequestAsync;
+import app.athleteunbound.RESTapiUtils.Services.BgProcessingResultReceiver;
+import app.athleteunbound.RESTapiUtils.Services.LoginService;
+import app.athleteunbound.RESTapiUtils.Services.SportService;
 
 /**
  * Created by Mal on 19-04-2016.
  */
-public class LoginActivity extends Activity implements AsyncResponse {
+public class LoginActivity extends Activity implements BgProcessingResultReceiver.Receiver {
 
     ProgressDialog progressDialog;
     TextView textField_username;
@@ -57,6 +62,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
     private CallbackManager callbackManager;
     private ProfileTracker profileTracker;
     private Profile mProfile;
+    public BgProcessingResultReceiver mReceiver;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -67,10 +73,25 @@ public class LoginActivity extends Activity implements AsyncResponse {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(hasToken()) {
-            //runMainViewActivity(new JSONObject());
+        /*SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = settings.edit();
+        String token = settings.getString("AthleteUnboundApiToken", "");
+        String athleteRegistered = settings.getString("athleteRegistered"," ");
+        boolean hasToken = settings.contains("AthleteUnboundApiToken");
+        boolean hasAthleteRegistered = settings.contains("AthleteRegistered");
+        editor.remove("AthleteUnboundApiToken");
+        editor.remove("athleteRegistered");
+        editor.clear();
+        editor.commit();*/
+        if(hasToken() && hasSignedUp()) {
+            runMainViewActivity();
 
+        } else if(hasToken() && !hasSignedUp()) {
+            runSignupFlow();
         }
+        mReceiver = new BgProcessingResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
         //setContentView(R.layout.activity_login);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
@@ -88,16 +109,16 @@ public class LoginActivity extends Activity implements AsyncResponse {
         FbloginButtonConfig config = new FbloginButtonConfig(new AsyncResponse() {
             @Override
             public void processFinish(JSONObject obj) {
-
+                //the facebook login result will notify us here
                 handleUserLogin((JSONObject)obj);
 
 
             }
         });
         config.Register(callbackManager, FBlogin_button);
-        SharedPreferences settings = PreferenceManager
+        /*SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(this);
-        this.tokenString = settings.getString("AthleteUnboundApiToken", ""/*default value*/);
+        this.tokenString = settings.getString("AthleteUnboundApiToken", "");*/
 
         spinner = (ProgressBar)findViewById(R.id.progressBar3);
         spinner.setVisibility(View.GONE);
@@ -108,13 +129,15 @@ public class LoginActivity extends Activity implements AsyncResponse {
         super.onResume();
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(this);
-        if(settings.contains("AthleteUnboundApiToken")) {
+        if(settings.contains("AthleteUnboundApiToken") && settings.contains("AthleteRegistered")) {
             try {
                 runMainViewActivity();
             }catch (Exception e) {
 
             }
 
+        } else if(settings.contains("AthleteUnboundApiToken") && !settings.contains("AthleteRegistered")) {
+            runSignupFlow();
         }
 
     }
@@ -125,13 +148,15 @@ public class LoginActivity extends Activity implements AsyncResponse {
         super.onResume();
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(this);
-        if(hasToken()) {
+        if(settings.contains("AthleteUnboundApiToken") && settings.contains("AthleteRegistered")) {
             try {
                 runMainViewActivity();
             }catch (Exception e) {
 
             }
 
+        } else if(settings.contains("AthleteUnboundApiToken") && !settings.contains("AthleteRegistered")) {
+            runSignupFlow();
         }
     }
 
@@ -139,6 +164,11 @@ public class LoginActivity extends Activity implements AsyncResponse {
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(this);
         return settings.contains("AthleteUnboundApiToken");
+    }
+    private boolean hasSignedUp() {
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        return settings.contains("AthleteRegistered");
     }
 
     public void onClickLoginBtn(View v) {
@@ -171,7 +201,19 @@ public class LoginActivity extends Activity implements AsyncResponse {
 
     private void handleUserLogin(JSONObject obj) {
 
-        AsyncTask FaceBookAuthAsync = new FacebookAuthAsync(new AsyncResponse() {
+        Intent loginService = new Intent(Intent.ACTION_SYNC, null, this, LoginService.class);
+        loginService.putExtra("receiver", this.mReceiver);
+        loginService.putExtra("facebook_loginResult", obj.toString());
+        try {
+            loginService.putExtra("facebook_username", obj.getString("name").toString());
+            loginService.putExtra("facebook_userId", obj.getString("id"));
+
+        }catch (Exception e) {
+
+        }
+        startService(loginService);
+
+        /*AsyncTask FaceBookAuthAsync = new FacebookAuthAsync(new AsyncResponse() {
             @Override
             public void processFinish(JSONObject obj) {
                 Log.d("auth ",obj.toString());
@@ -196,7 +238,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
                 }
 
             }
-        }).execute(obj);
+        }).execute(obj);*/
 
     }
     private void saveNewAppUser(JSONObject obj) {
@@ -238,12 +280,14 @@ public class LoginActivity extends Activity implements AsyncResponse {
     }
 
     @Override
-    public void processFinish(JSONObject output) { //when the async callback comes back..
-        int y = 7;
-        int x = 2;
-        int k = y + x;
-
-
-
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+        //the callback from LoginService is handled here
+        int k = resultCode +1;
+        if(resultCode==1) {
+            runSignupFlow();
+        } else if(resultCode == 2) {
+            //An error occured with the login Req
+            Toast.makeText(getApplicationContext(), "Login Error", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -30,96 +30,10 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Created by Mal on 25-04-2016.
  */
-public class ApiCommunicator extends AsyncTask<JSONObject, String, String> {
-    final String androidAPbaseUrl = "http://192.168.0.104:8081/";
-    final String baseUrlKU = "http://192.168.0.115:8081/";
-    HttpURLConnection urlConnection = null;
+public class ApiCommunicator {
 
-
-    public AsyncResponse delegate = null;
-
-    public ApiCommunicator(AsyncResponse delegate){
-        this.delegate = delegate;
-    }
-
-    public String saveNewAppUser(Gson user) {
-        SyncHttpClient client = new SyncHttpClient();
-
-        String result;
-        client.post(baseUrlKU+"api/appuser", new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-
-            }
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject errorResponse) {
-
-            }
-        });
+    public static String PostPutRequest() {
         return "";
     }
 
-
-    @Override
-    protected String doInBackground(JSONObject... params) {
-        JSONObject user = params[0];
-        try {
-            JSONObject obj = FacebookUtil.formatForPost(user);
-            URL url = new URL(IPFactory.getBaseUrlHome()+"api/appuser/facebook");
-            String toPost = obj.toString();
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("POST");
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(os, "UTF-8"));
-            writer.write(obj.toString());
-            writer.flush();
-            writer.close();
-            os.close();
-            int HttpResult =conn.getResponseCode();
-            int x = 7;
-
-            conn.connect();
-            if(HttpResult ==HttpURLConnection.HTTP_OK){
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        conn.getInputStream(),"utf-8"));
-                //String line;
-                String test = br.readLine();
-
-                return test;
-
-
-
-            }else{
-                //System.out.println(urlConnection.getResponseMessage());
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    @Override
-    protected void onPostExecute(String s) {
-        //call back to the activity when the AsyncTask is done
-        try {
-            JSONObject obj = new JSONObject(s);
-            delegate.processFinish(obj); //kald tilbage til LoginActivity
-        }catch (Exception e) {
-
-        }
-
-
-    }
 }

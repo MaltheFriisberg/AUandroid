@@ -61,7 +61,7 @@ public class FbloginButtonConfig {
                                 try {
 
                                     object.put("FacebookToken", loginResult.getAccessToken().getToken());
-                                    delegate.processFinish(object);
+                                    delegate.processFinish(FacebookUtil.formatForPost(object));
                                     Log.d("name ", object.getString("name"));
                                     Log.d("email ", object.getString("email"));
                                     //Log.d("token",object.getString("token"));
