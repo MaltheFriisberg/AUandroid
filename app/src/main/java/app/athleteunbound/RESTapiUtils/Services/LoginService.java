@@ -17,7 +17,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 
+import app.athleteunbound.RESTapiUtils.ApiCommunicator;
 import app.athleteunbound.RESTapiUtils.FacebookUtil;
 import app.athleteunbound.RESTapiUtils.IPFactory;
 
@@ -68,24 +70,26 @@ public class LoginService extends IntentService {
             Log.d("Exception", e.toString());
             receiver.send(2, new Bundle());
         }
+        this.stopSelf();
 
     }
     private String saveNewAppUser(String newAppUser) {
 
-        String subUrl = "api/appuser/facebook";
+        return ApiCommunicator.PostPutRequest(newAppUser, "api/appuser/facebook", "POST", "");
+        /*String subUrl = "api/appuser/facebook";
 
         String restMethod = "POST";
 
 
         try {
             JSONObject toPost = new JSONObject(newAppUser);
-            JSONObject obj = FacebookUtil.formatForPost(toPost);
+
             URL url = new URL(IPFactory.getBaseUrlHome()+subUrl);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            /*if(jsonWebToken.length() > 0 && !jsonWebToken.equals("")) {
+            if(jsonWebToken.length() > 0 && !jsonWebToken.equals("")) {
                 conn.setRequestProperty("x-access-token", params[2]);
-            }*/
+            }
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
@@ -121,12 +125,16 @@ public class LoginService extends IntentService {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return "";
+        return "";*/
 
     }
 
     private String authenticate(String facebook_username, String facebook_userId) {
-        try {
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("facebookId", facebook_userId);
+        headers.put("username", facebook_username);
+        return ApiCommunicator.GetRequest(headers, "api/appuser/authenticate/facebook");
+        /*try {
 
             URL url = new URL(IPFactory.getBaseUrlHome()+"api/appuser/authenticate/facebook");
 
@@ -155,7 +163,7 @@ public class LoginService extends IntentService {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return "";
+        return "";*/
     }
 
     private void getAthlete(String token) {

@@ -73,7 +73,7 @@ public class LoginActivity extends Activity implements BgProcessingResultReceive
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*SharedPreferences settings = PreferenceManager
+        SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
         String token = settings.getString("AthleteUnboundApiToken", "");
@@ -83,7 +83,7 @@ public class LoginActivity extends Activity implements BgProcessingResultReceive
         editor.remove("AthleteUnboundApiToken");
         editor.remove("athleteRegistered");
         editor.clear();
-        editor.commit();*/
+        editor.commit();
         if(hasToken() && hasSignedUp()) {
             runMainViewActivity();
 
@@ -212,59 +212,6 @@ public class LoginActivity extends Activity implements BgProcessingResultReceive
 
         }
         startService(loginService);
-
-        /*AsyncTask FaceBookAuthAsync = new FacebookAuthAsync(new AsyncResponse() {
-            @Override
-            public void processFinish(JSONObject obj) {
-                Log.d("auth ",obj.toString());
-                //Object success = obj.getBoolean("success");
-                try {
-                    JSONObject appUser = obj.getJSONObject("AppUser");
-                    if(obj.getBoolean("success")!=true) { //if the authentication request fails (the appUser doesnt exist)
-
-                        saveNewAppUser(appUser);
-                        //start the signup flow
-                        runSignupFlow();
-                    } else {
-
-                        String token = obj.getString("token");
-
-                        SaveToken(token);
-                        runMainViewActivity();
-
-                    }
-                }catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }).execute(obj);*/
-
-    }
-    private void saveNewAppUser(JSONObject obj) {
-        AsyncTask postPutRequest = new PostPutRequestAsync(new AsyncResponse() {
-            @Override
-            public void processFinish(JSONObject obj) {
-                try {
-                    if(!obj.has("error")) {
-                        //the user already exists
-                        //load the main Window
-                        //Log.d("error", obj.getString("error"));
-
-                        runSignupFlow();
-                    } else {
-
-
-                        runMainViewActivity();
-                    }
-                } catch (Exception e) {
-                    int k = 1;
-                    int y = 7;
-                    int u = 10;
-                    e.printStackTrace();
-                }
-            }
-        }).execute("api/appuser/facebook", "POST", "", FacebookUtil.formatForPost(obj).toString());
 
     }
     private void SaveToken(String token) {
