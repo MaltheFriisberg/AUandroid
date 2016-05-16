@@ -64,6 +64,7 @@ public class LoginService extends IntentService {
             } else {
                 token = authenticationResponse.getString("token");
                 SaveNewToken(token);
+                receiver.send(1, new Bundle());
             }
 
         }catch (Exception e) {

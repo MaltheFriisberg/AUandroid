@@ -40,6 +40,9 @@
             android:exported="false" />
         <service
             android:name=".RESTapiUtils.Services.LoginService"
+            android:exported="false" />
+        <service
+            android:name=".RESTapiUtils.Services.AthleteService"
             android:exported="false"></service>
     </application>
 

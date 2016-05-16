@@ -6,14 +6,25 @@ package app.athleteunbound.RESTmodels;
 public class Competency {
     private int primaryKey;
     private String name;
+    private String competencyId;
 
     public Competency() {
 
     }
 
-    public Competency(int primaryKey, String name, String category) {
+    public String getCompetencyId() {
+        return competencyId;
+    }
+
+    public void setCompetencyId(String competencyId) {
+        this.competencyId = competencyId;
+    }
+
+    public Competency(int primaryKey, String name, String category, String competencyId) {
         this.primaryKey = primaryKey;
+        this.competencyId = competencyId;
         this.name = name;
+
         this.category = category;
     }
 

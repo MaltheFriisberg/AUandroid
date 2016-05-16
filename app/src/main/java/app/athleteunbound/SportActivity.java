@@ -67,7 +67,7 @@ public class SportActivity extends AppCompatActivity implements BgProcessingResu
     public BgProcessingResultReceiver mReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //getApplicationContext().deleteDatabase("AthleteManager"); //DELETES the DB only use when changing the schema
+        getApplicationContext().deleteDatabase("AthleteManager"); //DELETES the DB only use when changing the schema
         super.onCreate(savedInstanceState);
         mReceiver = new BgProcessingResultReceiver(new Handler());
         mReceiver.setReceiver(this);

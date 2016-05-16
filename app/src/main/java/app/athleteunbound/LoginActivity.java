@@ -80,9 +80,9 @@ public class LoginActivity extends Activity implements BgProcessingResultReceive
         String athleteRegistered = settings.getString("athleteRegistered"," ");
         boolean hasToken = settings.contains("AthleteUnboundApiToken");
         boolean hasAthleteRegistered = settings.contains("AthleteRegistered");
-        editor.remove("AthleteUnboundApiToken");
+        //editor.remove("AthleteUnboundApiToken");
         editor.remove("athleteRegistered");
-        editor.clear();
+        //editor.clear();
         editor.commit();
         if(hasToken() && hasSignedUp()) {
             runMainViewActivity();
@@ -229,6 +229,7 @@ public class LoginActivity extends Activity implements BgProcessingResultReceive
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
         //the callback from LoginService is handled here
+        Log.d("login resultCode" , Integer.toString(resultCode));
         int k = resultCode +1;
         if(resultCode==1) {
             runSignupFlow();

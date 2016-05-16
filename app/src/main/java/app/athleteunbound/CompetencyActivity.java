@@ -67,7 +67,7 @@ public class CompetencyActivity extends AppCompatActivity {
             //JSONArray competenciesJson = appUser.getJSONArray("competencies");
 
             List<Competency> competenciesFromDb = dbHelper.getCompetencies(sport.getString("_androidId"));
-            dbHelper.close();
+
             for(Competency competency : competenciesFromDb) {
                 this.competencies.add(competency.getName());
             }
@@ -81,6 +81,7 @@ public class CompetencyActivity extends AppCompatActivity {
                     this.competencies.add(competency.getString("name"));
                 }
             }*/
+            dbHelper.close();
         }catch (Exception e) {
             Log.d("addCompetencies ", e.toString());
         }
