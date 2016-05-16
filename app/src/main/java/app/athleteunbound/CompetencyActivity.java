@@ -24,7 +24,7 @@ import app.athleteunbound.RESTmodels.OnSwipeTouchListener;
 //hjælp her http://theopentutorials.com/tutorials/android/listview/android-multiple-selection-listview/
 public class CompetencyActivity extends AppCompatActivity {
     ListView listView3;
-    JSONObject appUser;
+    //JSONObject appUser;
     JSONObject athlete;
     ArrayAdapter<String> adapter;
     RelativeLayout layout;
@@ -40,7 +40,7 @@ public class CompetencyActivity extends AppCompatActivity {
         listView3 = (ListView)findViewById(R.id.listView3);
         Intent intent = getIntent();
         try {
-            this.appUser = new JSONObject(intent.getStringExtra("appUser")); //we also need the id??
+            //this.appUser = new JSONObject(intent.getStringExtra("appUser")); //we also need the id??
             this.athlete = new JSONObject(intent.getStringExtra("athlete"));
 
         } catch (Exception e) {
@@ -61,13 +61,16 @@ public class CompetencyActivity extends AppCompatActivity {
     private void addCompetencies(String sportJson) {
         Log.d("addCompetencies", "");
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-        dbHelper.test();
+
         try {
-            JSONObject appUser = new JSONObject(sportJson);
+            JSONObject sport = new JSONObject(sportJson);
             //JSONArray competenciesJson = appUser.getJSONArray("competencies");
-            this.db.test();
-            List<Competency> xy = dbHelper.getCompetencies(appUser.getString("_androidId"));
-            List<Competency> competencies = this.db.getCompetencies(appUser.getString("_androidId"));
+
+            List<Competency> competenciesFromDb = dbHelper.getCompetencies(sport.getString("_androidId"));
+            dbHelper.close();
+            for(Competency competency : competenciesFromDb) {
+                this.competencies.add(competency.getName());
+            }
             int x = 1;
             int y = 2;
             int k = x+y;
@@ -121,14 +124,15 @@ public class CompetencyActivity extends AppCompatActivity {
     }
     private void changeToGoalActivity(String[] competenciesChosen) {
         try {
+
             JSONArray arr = new JSONArray(Arrays.asList(competenciesChosen));
-            this.appUser.put("competencies", arr);
+            //this.appUser.put("competencies", arr);
             this.athlete.put("competencies", arr);
         }catch (Exception e) {
 
         }
         Intent intent = new Intent(this, GoalActivity.class);
-        intent.putExtra("appUser", this.appUser.toString());
+        //intent.putExtra("appUser", this.appUser.toString());
         intent.putExtra("athlete", this.athlete.toString());
         startActivity(intent);
     }

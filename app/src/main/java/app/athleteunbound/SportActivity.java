@@ -58,8 +58,8 @@ public class SportActivity extends AppCompatActivity implements BgProcessingResu
     ListView listView2;
     RelativeLayout layout;
     private ProgressBar spinner;
-    JSONObject appUser;
-    JSONObject athlete;
+    //JSONObject appUser;
+    //JSONObject athlete;
     private Set<JSONObject> sportSet = new HashSet<JSONObject>();
     private HashMap<String, JSONObject> sportMap = new HashMap<>();
     private HashMap<String, Sport> sportMap1 = new HashMap<>();
@@ -85,11 +85,7 @@ public class SportActivity extends AppCompatActivity implements BgProcessingResu
         }
         setContentView(R.layout.activity_sport);
         Intent intent = getIntent();
-        try {
-            this.appUser = new JSONObject(intent.getStringExtra("appUser"));
-        } catch (Exception e) {
 
-        }
 
         spinner = (ProgressBar)findViewById(R.id.progressBar);
         spinner.getIndeterminateDrawable().setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
@@ -199,21 +195,23 @@ public class SportActivity extends AppCompatActivity implements BgProcessingResu
         try {
 
 
-            this.appUser.put("sport", sportChosen);
-            this.athlete = new JSONObject();
-            this.athlete.put("sport", sportChosen);
-            this.athlete.put("appUserId", this.appUser.getString("_id"));
+            //this.appUser.put("sport", sportChosen);
+            JSONObject athlete = new JSONObject();
+            athlete.put("sport", sportChosen);
+           // this.athlete.put("appUserId", this.appUser.getString("_id"));
+            Intent intent = new Intent(this, CompetencyActivity.class);
+            intent.putExtra("sport", sportMap1.get(sportChosen).toString());
+            intent.putExtra("athlete", athlete.toString());
+            //      intent.putExtra("appUser", this.appUser.toString());
+            intent.putExtra("sportChosen", sport.getJSONobject().toString());
+            //intent.putExtra("SportObject", this.sportMap1.get(sportChosen).toString());
+            db.close();
+            startActivity(intent);
         } catch (Exception e) {
             Log.d(" ",e.toString());
         }
 
-        Intent intent = new Intent(this, CompetencyActivity.class);
-        intent.putExtra("sport", sportMap1.get(sportChosen).toString());
-//        intent.putExtra("athlete", this.athlete.toString());
-  //      intent.putExtra("appUser", this.appUser.toString());
-        intent.putExtra("sportChosen", sport.getJSONobject().toString());
-        //intent.putExtra("SportObject", this.sportMap1.get(sportChosen).toString());
-        startActivity(intent);
+
     }
 
     @Override

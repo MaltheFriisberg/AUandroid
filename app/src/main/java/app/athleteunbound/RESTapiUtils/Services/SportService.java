@@ -49,6 +49,7 @@ public class SportService extends IntentService {
                     JSONObject sport = sportArray.getJSONObject(i);
 
                     db.createSport(sport);
+                    db.close();
                 }
             }catch (Exception e) {
 

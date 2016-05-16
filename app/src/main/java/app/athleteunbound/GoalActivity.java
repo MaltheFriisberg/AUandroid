@@ -60,6 +60,7 @@ public class GoalActivity extends AppCompatActivity {
             Toast.makeText(GoalActivity.this, this.athlete.toString(), Toast.LENGTH_SHORT).show();
             Log.d("athlete", this.athlete.toString());
             saveAthlete();
+
         }catch (Exception e) {
 
         }

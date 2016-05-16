@@ -124,9 +124,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
     public synchronized long createSport(JSONObject sport) {
+        SQLiteDatabase db = this.getWritableDatabase();
         String query = "INSERT OR IGNORE INTO bookmarks(users_id, lessoninfo_id) VALUES(123, 456)";
         try {
-            SQLiteDatabase db = this.getWritableDatabase();
+
             ContentValues values = new ContentValues();
 
             values.put(KEY_SPORT_NAME, sport.get("name").toString());
@@ -134,11 +135,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             long sport_id = db.insertOrThrow(TABLE_SPORTS, null, values);
             //handle the competencies on the sport object, insert in joined table
             createSportCompetencies(sport, sport_id);
+            db.close();
             return sport_id;
         }catch (Exception e) {
-            Log.d("Exception CreateSport", e.toString());
+            //Log.d("Exception CreateSport", e.toString());
             e.printStackTrace();
         }
+        db.close();
         return 0;
 
     }
@@ -154,7 +157,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 //save as competencies
                 JSONObject competency = arr.getJSONObject(i);
                 ContentValues values = new ContentValues();
-                values.put(KEY_COMPETENCY_NAME, competency.toString());
+                values.put(KEY_COMPETENCY_NAME, competency.getString("name").toString());
 
                 long competency_id = db.insertOrThrow(TABLE_COMPETENCIES, null, values);
 
@@ -163,9 +166,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             //add all the list primary keys in the joined table SPORT_COMPETENCIES
             createSportCompetency(competencyPKs, sport_id);
-
+            db.close();
         }catch (Exception e) {
-
+            db.close();
         }
 
     }
@@ -176,6 +179,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(KEY_SPORT_ID, sportId);
             values.put(KEY_COMPETENCY_ID, competencyPK);
             db.insertOrThrow(TABLE_SPORT_COMPETENCIES, null, values);
+            db.close();
         }
 
     }
@@ -199,6 +203,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
         c.close();
+        db.close();
         return sports;
     }
     public void deleteAllSports() {
@@ -209,13 +214,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         db.execSQL(deleteQuery);
+        db.close();
     }
     public List<Competency> getCompetencies(String sportId) {
+        List<Competency> toReturn = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
         Log.d("GetCompetencies ", sportId);
         try {
-            SQLiteDatabase db = this.getReadableDatabase();
+
             String query = "SELECT * FROM "+TABLE_SPORT_COMPETENCIES+ " LEFT JOIN "+ TABLE_COMPETENCIES +
-                    " ON  sportCompetencies.competencyId = competencies.id"; //WHERE sportCompetencies.sportId="+sportId
+                    " ON  sportCompetencies.competencyId = competencies.id WHERE sportId="+sportId; //WHERE sportCompetencies.sportId="+sportId
             Cursor c = db.rawQuery(query, null);
 
             if (c.moveToFirst()) {
@@ -223,20 +231,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String sportId1 =c.getString(c.getColumnIndex("sportId"));
                     Competency competency = new Competency();
                     competency.setPrimaryKey(c.getInt(c.getColumnIndex(KEY_ID)));
-                    //sport.setName(c.getString(c.getColumnIndex(KEY_SPORT_NAME)));
+                    competency.setName(c.getString(c.getColumnIndex(KEY_COMPETENCY_NAME)));
                     //sport.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
-                    //sports.add(sport);
+                    toReturn.add(competency);
                 } while (c.moveToNext());
             }
             c.close();
         }catch (Exception e) {
             Log.d("getCompetencies ", e.toString());
         }
-
-        return new ArrayList<>();
-    }
-    public void test() {
-        Log.d("test ", "DbHelper.test()");
+        db.close();
+        return toReturn;
     }
 
 

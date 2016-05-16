@@ -27,8 +27,9 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".StartActivity"
-            android:configChanges="keyboardHidden|orientation"/>
+        <activity
+            android:name=".StartActivity"
+            android:configChanges="keyboardHidden|orientation" />
         <activity android:name=".MainViewActivity" />
         <activity android:name=".CompetencyActivity" />
         <activity android:name=".LoginActivity" />
@@ -36,6 +37,9 @@
 
         <service
             android:name=".RESTapiUtils.Services.SportService"
+            android:exported="false" />
+        <service
+            android:name=".RESTapiUtils.Services.LoginService"
             android:exported="false"></service>
     </application>
 

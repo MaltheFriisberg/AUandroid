@@ -67,9 +67,10 @@ public class LoginActivity extends Activity implements AsyncResponse {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if(hasToken()) {
-            runMainViewActivity(new JSONObject());
-        }*/
+        if(hasToken()) {
+            //runMainViewActivity(new JSONObject());
+
+        }
         //setContentView(R.layout.activity_login);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
@@ -109,7 +110,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
                 .getDefaultSharedPreferences(this);
         if(settings.contains("AthleteUnboundApiToken")) {
             try {
-                runMainViewActivity(new JSONObject(""));
+                runMainViewActivity();
             }catch (Exception e) {
 
             }
@@ -126,7 +127,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
                 .getDefaultSharedPreferences(this);
         if(hasToken()) {
             try {
-                runMainViewActivity(new JSONObject(""));
+                runMainViewActivity();
             }catch (Exception e) {
 
             }
@@ -157,14 +158,14 @@ public class LoginActivity extends Activity implements AsyncResponse {
 
 
     }
-    private void runMainViewActivity(JSONObject obj) {
+    private void runMainViewActivity() {
         Intent intent = new Intent(this, MainViewActivity.class);
-        intent.putExtra("AppUser",obj.toString());
+        //intent.putExtra("AppUser",obj.toString());
         startActivity(intent);
     }
-    private void runSignupFlow(JSONObject obj){
+    private void runSignupFlow(){
         Intent intent = new Intent(this, SportActivity.class);
-        intent.putExtra("appUser",obj.toString());
+        //intent.putExtra("appUser",obj.toString());
         startActivity(intent);
     }
 
@@ -181,13 +182,13 @@ public class LoginActivity extends Activity implements AsyncResponse {
 
                         saveNewAppUser(appUser);
                         //start the signup flow
-                        runSignupFlow(appUser);
+                        runSignupFlow();
                     } else {
 
                         String token = obj.getString("token");
 
                         SaveToken(token);
-                        runMainViewActivity(appUser);
+                        runMainViewActivity();
 
                     }
                 }catch (Exception e) {
@@ -208,11 +209,11 @@ public class LoginActivity extends Activity implements AsyncResponse {
                         //load the main Window
                         //Log.d("error", obj.getString("error"));
 
-                        runSignupFlow(obj);
+                        runSignupFlow();
                     } else {
 
 
-                        runMainViewActivity(obj);
+                        runMainViewActivity();
                     }
                 } catch (Exception e) {
                     int k = 1;
@@ -222,30 +223,7 @@ public class LoginActivity extends Activity implements AsyncResponse {
                 }
             }
         }).execute("api/appuser/facebook", "POST", "", FacebookUtil.formatForPost(obj).toString());
-        /*AsyncTask apiCommunicator = new ApiCommunicator(new AsyncResponse() {
-            @Override
-            public void processFinish(JSONObject obj) {
-                try {
-                    if(!obj.has("error")) {
-                        //the user already exists
-                        //load the main Window
-                        //Log.d("error", obj.getString("error"));
 
-                        runSignupFlow(obj);
-                    } else {
-
-
-                        runMainViewActivity(obj);
-                    }
-                } catch (Exception e) {
-                    int k = 1;
-                    int y = 7;
-                    int u = 10;
-                    e.printStackTrace();
-                }
-
-            }
-        }).execute(obj);*/
     }
     private void SaveToken(String token) {
         SharedPreferences settings = PreferenceManager
