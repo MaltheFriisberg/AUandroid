@@ -3,8 +3,10 @@ package app.athleteunbound;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,10 +32,12 @@ import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
 import app.athleteunbound.RESTapiUtils.PostPutRequestAsync;
 import app.athleteunbound.RESTmodels.Athlete;
 import app.athleteunbound.RESTmodels.Competency;
+import layout.RadarChartFragment;
 
-public class MainViewActivity extends AppCompatActivity {
-    private RadarChart chart;
+public class MainViewActivity extends FragmentActivity implements RadarChartFragment.OnFragmentInteractionListener {
+
     private ProgressBar spinner;
+    private ProgressBar bar5;
     //private JSONObject athlete;
     private JSONObject competencyRatings;
     private Athlete athlete;
@@ -43,66 +47,39 @@ public class MainViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_view);
         this.spinner = (ProgressBar)findViewById(R.id.progressBar4);
+        this.bar5 = (ProgressBar)findViewById(R.id.progressBar5);
         this.spinner.setVisibility(View.GONE);
-        this.chart = (RadarChart) findViewById(R.id.chart);
-        setUpRadarChart();
-    }
+        this.bar5.setVisibility(View.GONE);
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
+        if (findViewById(R.id.fragment_container) != null) {
 
-    private void setUpRadarChart() {
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
 
-        chart.setWebLineWidth(0);
+            // Create a new Fragment to be placed in the activity layout
+            RadarChartFragment radarChartFragment = new RadarChartFragment();
 
-        ArrayList<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(4f, 0));
-        entries.add(new Entry(5f, 1));
-        entries.add(new Entry(2f, 2));
-        entries.add(new Entry(7f, 3));
-        //entries.add(new Entry(6f, 4));
-        //entries.add(new Entry(5f, 5));
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+            radarChartFragment.setArguments(getIntent().getExtras());
 
-        ArrayList<Entry> entries2 = new ArrayList<>();
-        entries2.add(new Entry(1f, 0));
-        entries2.add(new Entry(5f, 1));
-        entries2.add(new Entry(6f, 2));
-        entries2.add(new Entry(3f, 3));
-        //entries2.add(new Entry(4f, 4));
-        //entries2.add(new Entry(8f, 5));
-
-        RadarDataSet dataset_comp1 = new RadarDataSet(entries, "this week");
-
-        RadarDataSet dataset_comp2 = new RadarDataSet(entries2, "lastweek");
-
-        dataset_comp1.setColor(Color.CYAN);
-
-        dataset_comp2.setColor(Color.RED);
-
-        dataset_comp1.setDrawFilled(true);
-
-        dataset_comp2.setDrawFilled(true);
-
-        List<IRadarDataSet> dataSets = new ArrayList<IRadarDataSet>();
-        dataSets.add(dataset_comp1);
-        dataSets.add(dataset_comp2);
-
-        List<String> labels = new ArrayList<>();
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-        for(Competency competency : dbHelper.getAthleteCompetencies()) {
-            labels.add(competency.getName());
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, radarChartFragment).commit();
         }
-
-        /*labels.add("Communication");
-        labels.add("Technical Knowledge");
-        labels.add("Team Player");
-        labels.add("Meeting Deadlines");
-        labels.add("Problem Solving");
-        labels.add("Punctuality");
-        labels.add("competence 1");
-        labels.add("competence 2");
-        labels.add("competence 3");*/
-        RadarData data1 = new RadarData();
-
-        RadarData data = new RadarData(labels, dataSets);
-        this.chart.setData(data);
+        //this.chart = (RadarChart) findViewById(R.id.chart);
+        //setUpRadarChart();
     }
 
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Log.d("Fragment interation ", "");
+
+    }
 }
