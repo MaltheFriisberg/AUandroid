@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import app.athleteunbound.DatabaseHelpers.DatabaseHelper;
@@ -29,6 +30,7 @@ public class CompetencyActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     RelativeLayout layout;
     List<String> competencies = new ArrayList<>();
+    HashMap<String, Competency> competencyMap = new HashMap<>();
     DatabaseHelper db;
 
     @Override
@@ -70,6 +72,7 @@ public class CompetencyActivity extends AppCompatActivity {
 
             for(Competency competency : competenciesFromDb) {
                 this.competencies.add(competency.getName());
+                this.competencyMap.put(competency.getName(), competency);
             }
             int x = 1;
             int y = 2;
@@ -124,6 +127,12 @@ public class CompetencyActivity extends AppCompatActivity {
         });
     }
     private void changeToGoalActivity(String[] competenciesChosen) {
+        DatabaseHelper helper = new DatabaseHelper(getApplicationContext());
+        ArrayList<Competency> competencies = new ArrayList<>();
+        for(String chosen : competenciesChosen) {
+            competencies.add(competencyMap.get(chosen));
+        }
+        helper.saveAthleteCompetencies(competencies);
         try {
 
             JSONArray arr = new JSONArray(Arrays.asList(competenciesChosen));

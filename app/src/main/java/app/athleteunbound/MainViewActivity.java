@@ -23,11 +23,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.athleteunbound.DatabaseHelpers.DatabaseHelper;
 import app.athleteunbound.Interfaces.AsyncResponse;
 import app.athleteunbound.Interfaces.AsyncResponse1;
 import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
 import app.athleteunbound.RESTapiUtils.PostPutRequestAsync;
 import app.athleteunbound.RESTmodels.Athlete;
+import app.athleteunbound.RESTmodels.Competency;
 
 public class MainViewActivity extends AppCompatActivity {
     private RadarChart chart;
@@ -55,16 +57,16 @@ public class MainViewActivity extends AppCompatActivity {
         entries.add(new Entry(5f, 1));
         entries.add(new Entry(2f, 2));
         entries.add(new Entry(7f, 3));
-        entries.add(new Entry(6f, 4));
-        entries.add(new Entry(5f, 5));
+        //entries.add(new Entry(6f, 4));
+        //entries.add(new Entry(5f, 5));
 
         ArrayList<Entry> entries2 = new ArrayList<>();
         entries2.add(new Entry(1f, 0));
         entries2.add(new Entry(5f, 1));
         entries2.add(new Entry(6f, 2));
         entries2.add(new Entry(3f, 3));
-        entries2.add(new Entry(4f, 4));
-        entries2.add(new Entry(8f, 5));
+        //entries2.add(new Entry(4f, 4));
+        //entries2.add(new Entry(8f, 5));
 
         RadarDataSet dataset_comp1 = new RadarDataSet(entries, "this week");
 
@@ -83,9 +85,12 @@ public class MainViewActivity extends AppCompatActivity {
         dataSets.add(dataset_comp2);
 
         List<String> labels = new ArrayList<>();
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        for(Competency competency : dbHelper.getAthleteCompetencies()) {
+            labels.add(competency.getName());
+        }
 
-
-        labels.add("Communication");
+        /*labels.add("Communication");
         labels.add("Technical Knowledge");
         labels.add("Team Player");
         labels.add("Meeting Deadlines");
@@ -93,7 +98,7 @@ public class MainViewActivity extends AppCompatActivity {
         labels.add("Punctuality");
         labels.add("competence 1");
         labels.add("competence 2");
-        labels.add("competence 3");
+        labels.add("competence 3");*/
         RadarData data1 = new RadarData();
 
         RadarData data = new RadarData(labels, dataSets);

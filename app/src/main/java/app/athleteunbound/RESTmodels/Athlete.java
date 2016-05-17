@@ -10,16 +10,52 @@ import java.util.List;
  * Created by Mal on 14-05-2016.
  */
 public class Athlete {
-    private String _id;
+    private int _id;
     private String appUserId;
+    private String username;
     private String sport;
     private String goal;
     private List<String> competencyIds;
     private List<String> competencies;
+    private String createdAt;
 
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public String toString() {
+        return "Athlete{" +
+                "_id=" + _id +
+                ", appUserId='" + appUserId + '\'' +
+                ", username='" + username + '\'' +
+                ", sport='" + sport + '\'' +
+                ", goal='" + goal + '\'' +
+                ", competencyIds=" + competencyIds +
+                ", competencies=" + competencies +
+                ", createdAt='" + createdAt + '\'' +
+                '}';
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getCreatedAt() {
+
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Athlete() {
+
+    }
     public Athlete(JSONObject athlete) {
         try {
-            this._id = athlete.getString("_id");
+            this._id = athlete.getInt("_id");
             this.appUserId = athlete.getString("appUserId");
             this.sport = athlete.getString("sport");
             this.goal = athlete.getString("goal");
@@ -48,11 +84,11 @@ public class Athlete {
 
     }
 
-    public String get_id() {
+    public int get_id() {
         return _id;
     }
 
-    public void set_id(String _id) {
+    public void set_id(int _id) {
         this._id = _id;
     }
 

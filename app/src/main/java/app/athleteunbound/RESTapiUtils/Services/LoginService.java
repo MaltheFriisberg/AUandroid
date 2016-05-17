@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -19,9 +20,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
+import app.athleteunbound.DatabaseHelpers.DatabaseHelper;
 import app.athleteunbound.RESTapiUtils.ApiCommunicator;
 import app.athleteunbound.RESTapiUtils.FacebookUtil;
 import app.athleteunbound.RESTapiUtils.IPFactory;
+import app.athleteunbound.RESTmodels.AppUser;
 
 
 /**
@@ -59,6 +62,17 @@ public class LoginService extends IntentService {
                 //Save the token in appPreferences
                 token = newAuthenticationResponse.getString("token");
                 SaveNewToken(newAuthenticationResponse.getString("token"));
+                //Save appUser in DB
+                DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+                AppUser newAppUser = new AppUser(
+                    0,
+                    appUser.getString("_id"),
+                    appUser.getString("username"),
+                    appUser.getString("email"),
+                    appUser.getString("gender")
+                );
+                long result = db.createAppUser(newAppUser);
+                db.close();
                 receiver.send(1, new Bundle());
 
             } else {

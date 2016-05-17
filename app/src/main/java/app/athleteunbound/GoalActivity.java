@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import app.athleteunbound.DatabaseHelpers.DatabaseHelper;
 import app.athleteunbound.Interfaces.AsyncResponse;
 import app.athleteunbound.RESTapiUtils.PostPutRequestAsync;
 import app.athleteunbound.RESTapiUtils.Services.AthleteService;
@@ -55,14 +56,22 @@ public class GoalActivity extends AppCompatActivity implements BgProcessingResul
                 //apicall to register the athlete
 
                 //load the mainView
-                goToNextActivity();
+                startAthleteService();
 
 
+            }
+
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeRight();
+                DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+                Toast.makeText(GoalActivity.this, db.getAllAthletes().get(0).toString(), Toast.LENGTH_SHORT).show();
+                db.close();
             }
         });
 
     }
-    private void goToNextActivity() {
+    private void startAthleteService() {
         try {
             this.athlete.put("goal", editText.getText());
             Intent athleteService = new Intent(Intent.ACTION_SYNC, null, this, AthleteService.class);
@@ -89,10 +98,15 @@ public class GoalActivity extends AppCompatActivity implements BgProcessingResul
             }
         }).execute("api/athlete", "POST", apiToken, this.athlete.toString());
     }*/
+    private void goToNextActivity() {
+        Intent intent = new Intent(this, MainViewActivity.class);
+        startActivity(intent);
+    }
 
 
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
+
         goToNextActivity();
     }
 }
