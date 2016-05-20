@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +33,7 @@ import app.athleteunbound.RESTapiUtils.ApiRequestAsync;
 import app.athleteunbound.RESTapiUtils.PostPutRequestAsync;
 import app.athleteunbound.RESTmodels.Athlete;
 import app.athleteunbound.RESTmodels.Competency;
+import layout.DevelopmentFragment;
 import layout.RadarChartFragment;
 
 public class MainViewActivity extends FragmentActivity implements RadarChartFragment.OnFragmentInteractionListener {
@@ -81,5 +83,21 @@ public class MainViewActivity extends FragmentActivity implements RadarChartFrag
     public void onFragmentInteraction(Uri uri) {
         Log.d("Fragment interation ", "");
 
+    }
+    public void onClickDevelopment(View v) {
+        Log.d("OnClickDevelopment ", v.toString());
+        DevelopmentFragment fragment = new DevelopmentFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+    public void onClickPerformanceProfile(View v) {
+        Log.d("onClickPerformanceProf ", v.toString());
+        RadarChartFragment fragment = new RadarChartFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

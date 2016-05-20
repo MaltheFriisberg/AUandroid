@@ -141,19 +141,21 @@ public class RadarChartFragment extends Fragment {
     private void setUpRadarChart() {
 
         chart.setWebLineWidth(0);
+        chart.setDrawWeb(true);
+        //chart.se
 
         ArrayList<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(4f, 0));
-        entries.add(new Entry(5f, 1));
-        entries.add(new Entry(2f, 2));
-        entries.add(new Entry(7f, 3));
+        entries.add(new Entry(27f, 0));
+        entries.add(new Entry(10f, 1));
+        entries.add(new Entry(12f, 2));
+        entries.add(new Entry(20f, 3));
         //entries.add(new Entry(6f, 4));
         //entries.add(new Entry(5f, 5));
 
         ArrayList<Entry> entries2 = new ArrayList<>();
-        entries2.add(new Entry(1f, 0));
-        entries2.add(new Entry(5f, 1));
-        entries2.add(new Entry(6f, 2));
+        entries2.add(new Entry(10f, 0));
+        entries2.add(new Entry(33f, 1));
+        entries2.add(new Entry(12f, 2));
         entries2.add(new Entry(3f, 3));
         //entries2.add(new Entry(4f, 4));
         //entries2.add(new Entry(8f, 5));
