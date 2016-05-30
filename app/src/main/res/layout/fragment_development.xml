@@ -1,26 +1,113 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/LinearLayoutDevelopment"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="layout.DevelopmentFragment">
 
+
     <!-- TODO: Update blank fragment layout -->
+
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:text="New Text"
+        android:id="@+id/textView11" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+        android:id="@+id/competencyProgress1"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        app:rcProgress="3"
+        app:rcSecondaryProgress="7"
+        app:rcMax="10"
+        app:rcRadius="10dp"
+        app:rcBackgroundPadding="10dp"
+        app:rcReverse="false"
+        app:rcProgressColor="@color/green"
+        app:rcSecondaryProgressColor="@color/DarkOrange"
+        app:rcBackgroundColor="@color/gray" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="DevelopmentFragment"
-            android:id="@+id/textView11"
-            android:layout_gravity="center" />
-    </FrameLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:text="New Text"
+        android:id="@+id/textView12" />
 
-</FrameLayout>
+    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+        android:id="@+id/competencyProgress2"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        app:rcProgress="3"
+        app:rcSecondaryProgress="7"
+        app:rcMax="10"
+        app:rcRadius="10dp"
+        app:rcBackgroundPadding="10dp"
+        app:rcReverse="false"
+        app:rcProgressColor="@color/green"
+        app:rcSecondaryProgressColor="@color/DarkOrange"
+        app:rcBackgroundColor="@color/gray" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:text="New Text"
+        android:id="@+id/textView13" />
+
+    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+        android:id="@+id/competencyProgress3"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        app:rcProgress="3"
+        app:rcSecondaryProgress="7"
+        app:rcMax="10"
+        app:rcRadius="10dp"
+        app:rcBackgroundPadding="10dp"
+        app:rcReverse="false"
+        app:rcProgressColor="@color/green"
+        app:rcSecondaryProgressColor="@color/DarkOrange"
+        app:rcBackgroundColor="@color/gray" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:text="New Text"
+        android:id="@+id/textView14" />
+
+    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+        android:id="@+id/competencyProgress4"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        app:rcProgress="3"
+        app:rcSecondaryProgress="7"
+        app:rcMax="10"
+        app:rcRadius="10dp"
+        app:rcBackgroundPadding="10dp"
+        app:rcReverse="false"
+        app:rcProgressColor="@color/green"
+        app:rcSecondaryProgressColor="@color/DarkOrange"
+        app:rcBackgroundColor="@color/gray" />
+
+</LinearLayout>

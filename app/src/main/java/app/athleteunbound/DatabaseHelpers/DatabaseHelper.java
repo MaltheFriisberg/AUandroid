@@ -184,7 +184,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public synchronized void createSportCompetencies(JSONObject sport, long sport_id) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        //HashMap to hold the primary keys and values for the joined table
         List<Integer> competencyPKs = new ArrayList<>();
         try {
             JSONArray arr = sport.getJSONArray("competencies");
@@ -221,13 +220,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 values.put(KEY_SPORT_ID, sportId);
                 values.put(KEY_COMPETENCY_ID, competencyPK);
                 db.insertOrThrow(TABLE_SPORT_COMPETENCIES, null, values);
-                //db.close();
             }
         }catch (Exception e) {
             Log.d("exception ",e.toString());
         }
-
-
     }
     public List<Sport> getAllSports() {
         List<Sport> sports = new ArrayList<>();

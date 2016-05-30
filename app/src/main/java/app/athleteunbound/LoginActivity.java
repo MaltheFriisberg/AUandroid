@@ -80,6 +80,7 @@ public class LoginActivity extends Activity implements BgProcessingResultReceive
         String athleteRegistered = settings.getString("athleteRegistered"," ");
         boolean hasToken = settings.contains("AthleteUnboundApiToken");
         boolean hasAthleteRegistered = settings.contains("AthleteRegistered");
+        //clear the tokens, for testing signup flow
         //editor.remove("AthleteUnboundApiToken");
         editor.remove("athleteRegistered");
         //editor.clear();

@@ -10,7 +10,7 @@ public class IPFactory {
 
     //android device needs to be connected to same network as the laptop hosting the backend
     public static String getBaseUrlHome() {
-        return "http://192.168.0.103:8081/";
+        return "http://192.168.0.105:8081/";
     }
     public static String getAndroidAPbaseUrl() {
         return "http://192.168.0.101:8081/";
