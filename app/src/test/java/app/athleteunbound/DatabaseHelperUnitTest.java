@@ -1,5 +1,6 @@
 package app.athleteunbound;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.test.mock.MockContext;
 
 import org.junit.Before;
@@ -20,9 +21,11 @@ public class DatabaseHelperUnitTest {
     private Database database;
 
     @Before
-    private void setYp() {
+    private void setUp() {
         //this.database =  new Database(new MockContext());
         this.database = Mockito.mock(Database.class);
+        SQLiteDatabase db = this.database.getReadableDatabase();
+        SQLiteDatabase db1 = this.database.getReadableDatabase();
         this.databaseHelper = new DatabaseHelper(this.database);
     }
     @Test

@@ -34,16 +34,28 @@ public class DatabaseHelper {
     // Logcat tag
     private static final String LOG = "DatabaseHelper";
     private Database myDataBase;
+    private SQLiteDatabase readableDb;
+    private SQLiteDatabase writeableDb;
 
     //constructor for unit testing
     public DatabaseHelper(Database db) {
         this.myDataBase = db;
+        this.readableDb = db.getReadableDatabase();
+        this.writeableDb = db.getWritableDatabase();
     }
 
     public DatabaseHelper(Context context) {
 
         //super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.myDataBase = new Database(context);
+        this.writeableDb = myDataBase.getWritableDatabase();
+        this.readableDb = myDataBase.getReadableDatabase();
+    }
+
+    public DatabaseHelper(Database db, SQLiteDatabase readableDb, SQLiteDatabase writeableDb) {
+        this.myDataBase = db;
+        this.readableDb = readableDb;
+        this.writeableDb = writeableDb;
     }
 
     public synchronized long createSport(JSONObject sport) {
@@ -88,6 +100,7 @@ public class DatabaseHelper {
     public synchronized void createSportCompetencies(JSONObject sport, long sport_id) {
         //SQLiteDatabase db = this.getWritableDatabase();
         SQLiteDatabase db = myDataBase.getWritableDatabase();
+
         List<Integer> competencyPKs = new ArrayList<>();
         try {
             JSONArray arr = sport.getJSONArray("competencies");
