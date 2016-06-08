@@ -72,7 +72,7 @@ public class LoginService extends IntentService {
                     appUser.getString("gender")
                 );
                 long result = db.createAppUser(newAppUser);
-                db.close();
+                //db.close();
                 receiver.send(1, new Bundle());
 
             } else {

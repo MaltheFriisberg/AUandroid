@@ -54,7 +54,7 @@ public class SportService extends IntentService {
             }catch (Exception e) {
 
             }
-            db.close();
+            //db.close();
             receiver.send(1, b);
         }
         //threadLocked = false;

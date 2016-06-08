@@ -84,7 +84,7 @@ public class CompetencyActivity extends AppCompatActivity {
                     this.competencies.add(competency.getString("name"));
                 }
             }*/
-            dbHelper.close();
+            //dbHelper.close();
         }catch (Exception e) {
             Log.d("addCompetencies ", e.toString());
         }

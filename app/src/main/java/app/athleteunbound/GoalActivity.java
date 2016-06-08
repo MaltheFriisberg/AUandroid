@@ -66,7 +66,7 @@ public class GoalActivity extends AppCompatActivity implements BgProcessingResul
                 super.onSwipeRight();
                 DatabaseHelper db = new DatabaseHelper(getApplicationContext());
                 Toast.makeText(GoalActivity.this, db.getAllAthletes().get(0).toString(), Toast.LENGTH_SHORT).show();
-                db.close();
+                //db.close();
             }
         });
 

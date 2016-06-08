@@ -205,7 +205,7 @@ public class SportActivity extends AppCompatActivity implements BgProcessingResu
             //      intent.putExtra("appUser", this.appUser.toString());
             intent.putExtra("sportChosen", sport.getJSONobject().toString());
             //intent.putExtra("SportObject", this.sportMap1.get(sportChosen).toString());
-            db.close();
+            //db.close();
             startActivity(intent);
         } catch (Exception e) {
             Log.d(" ",e.toString());

@@ -38,7 +38,7 @@ public class AthleteService extends IntentService {
             //save in DB
             DatabaseHelper DbHelper = new DatabaseHelper(getApplicationContext());
             long dbResult = DbHelper.saveAthlete(athletePosed);
-            DbHelper.close();
+            //DbHelper.close();
 
         }catch (Exception e) {
 
