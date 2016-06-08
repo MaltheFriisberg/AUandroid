@@ -58,28 +58,45 @@ public class DatabaseHelper {
         this.writeableDb = writeableDb;
     }
 
-    public synchronized long createSport(JSONObject sport) {
-        SQLiteDatabase db = myDataBase.getWritableDatabase();
-        //Database db1 = new Database(getContext());
+    public SQLiteDatabase getWriteableDb() {
+        return writeableDb;
+    }
 
+    public void setReadableDb(SQLiteDatabase readableDb) {
+        this.readableDb = readableDb;
+    }
+
+    public void setWriteableDb(SQLiteDatabase writeableDb) {
+        this.writeableDb = writeableDb;
+    }
+
+    public SQLiteDatabase getReadableDb() {
+        return readableDb;
+    }
+
+    public synchronized long createSport(JSONObject sport) {
+        //SQLiteDatabase db = myDataBase.getWritableDatabase();
+        //Database db1 = new Database(getContext());
+        openDBs();
         try {
 
             ContentValues values = new ContentValues();
 
+            //boolean open = writeableDb.isOpen();
             values.put(DbStrings.KEY_SPORT_NAME, sport.get("name").toString());
             //insert row
-            long sport_id = db.insertOrThrow(DbStrings.TABLE_SPORTS, null, values);
+            long sport_id = writeableDb.insertOrThrow(DbStrings.TABLE_SPORTS, null, values);
             //handle the competencies on the sport object, insert in joined table
             createSportCompetencies(sport, sport_id);
             //db.close();
             return sport_id;
         }catch (Exception e) {
-            Log.d("Exception CreateSport", e.toString());
+            //Log.d("Exception CreateSport", e.toString());
             e.printStackTrace();
             //createSportCompetencies(sport, sport_id);
             try {
                 String query = "SELECT "+DbStrings.KEY_ID+" FROM "+DbStrings.TABLE_SPORTS +" WHERE name='"+sport.getString("name")+"'";
-                Cursor c = db.rawQuery(query, null);
+                Cursor c = writeableDb.rawQuery(query, null);
                 long sportId;
                 if (c.moveToFirst()) {
                     do {
@@ -92,15 +109,16 @@ public class DatabaseHelper {
                 e1.printStackTrace();
             }
         }
-        db.close();
+        closeDBs();
         return 0;
+
 
     }
 
     public synchronized void createSportCompetencies(JSONObject sport, long sport_id) {
         //SQLiteDatabase db = this.getWritableDatabase();
-        SQLiteDatabase db = myDataBase.getWritableDatabase();
-
+        //SQLiteDatabase db = myDataBase.getWritableDatabase();
+        openDBs();
         List<Integer> competencyPKs = new ArrayList<>();
         try {
             JSONArray arr = sport.getJSONArray("competencies");
@@ -115,7 +133,7 @@ public class DatabaseHelper {
                 String query = "IF NOT EXISTS (SELECT * from competencies " +
                         "WHERE name = "+competency.getString("name")+
                         "INSERT INTO Competencies VALUES("+"";
-                long competency_id = db.insertOrThrow(DbStrings.TABLE_COMPETENCIES, null, values);
+                long competency_id = writeableDb.insertOrThrow(DbStrings.TABLE_COMPETENCIES, null, values);
 
                 //save the primary keys for each created competency in list
                 competencyPKs.add((int)competency_id);
@@ -127,35 +145,33 @@ public class DatabaseHelper {
             Log.d("exception ", e.toString());
             //db.close();
         }
-        db.close();
+        closeDBs();
 
     }
     public  synchronized  void createSportCompetency(List<Integer> competencyPKs, long sportId) {
-        SQLiteDatabase db = myDataBase.getWritableDatabase();
+        openDBs();
         try {
             //SQLiteDatabase db = this.getWritableDatabase();
             for(Integer competencyPK : competencyPKs) {
                 ContentValues values = new ContentValues();
                 values.put(DbStrings.KEY_SPORT_ID, sportId);
                 values.put(DbStrings.KEY_COMPETENCY_ID, competencyPK);
-                db.insertOrThrow(DbStrings.TABLE_SPORT_COMPETENCIES, null, values);
+                writeableDb.insertOrThrow(DbStrings.TABLE_SPORT_COMPETENCIES, null, values);
 
             }
         }catch (Exception e) {
             Log.d("exception ",e.toString());
-            db.close();
+            closeDBs();
         }
-        db.close();
+        closeDBs();
     }
     public List<Sport> getAllSports() {
         List<Sport> sports = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + DbStrings.TABLE_SPORTS;
 
         Log.e(LOG, selectQuery);
-
-        //SQLiteDatabase db = this.getReadableDatabase();
-        SQLiteDatabase db = myDataBase.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
+        openDBs();
+        Cursor c = readableDb.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
@@ -168,7 +184,7 @@ public class DatabaseHelper {
             } while (c.moveToNext());
         }
         c.close();
-        db.close();
+        closeDBs();
         return sports;
     }
     public void deleteAllSports() {
@@ -184,13 +200,14 @@ public class DatabaseHelper {
     }
     public List<Competency> getCompetencies(String sportId) {
         List<Competency> toReturn = new ArrayList<>();
-        SQLiteDatabase db = myDataBase.getReadableDatabase();
+        //SQLiteDatabase db = myDataBase.getReadableDatabase();
+        openDBs();
         Log.d("GetCompetencies ", sportId);
         try {
 
             String query = "SELECT * FROM "+DbStrings.TABLE_SPORT_COMPETENCIES+ " LEFT JOIN "+ DbStrings.TABLE_COMPETENCIES +
                     " ON  sportCompetencies.competencyId = competencies.id WHERE sportId="+sportId; //WHERE sportCompetencies.sportId="+sportId
-            Cursor c = db.rawQuery(query, null);
+            Cursor c = readableDb.rawQuery(query, null);
 
             if (c.moveToFirst()) {
                 do {
@@ -207,12 +224,13 @@ public class DatabaseHelper {
         }catch (Exception e) {
             Log.d("getCompetencies ", e.toString());
         }
-        db.close();
+        closeDBs();
         return toReturn;
     }
     public long saveAthlete(String athlete) {
 
-        SQLiteDatabase db = myDataBase.getWritableDatabase();
+        //SQLiteDatabase db = myDataBase.getWritableDatabase();
+        openDBs();
 
         try {
             JSONObject athleteObj = new JSONObject(athlete);
@@ -224,40 +242,43 @@ public class DatabaseHelper {
             //values.put(KEY_USERNAME, athleteObj.getString("username"));
             //values.put()
             //insert row
-            long athlete_id = db.insertOrThrow(DbStrings.TABLE_ATHLETES, null, values);
+            long athlete_id = writeableDb.insertOrThrow(DbStrings.TABLE_ATHLETES, null, values);
             //handle the competencies on the sport object, insert in joined table
             //saveAthleteCompetencies(athleteObj.getJSONArray("competencies"));
-            db.close();
+            closeDBs();
             return athlete_id;
         }catch (Exception e) {
             //Log.d("Exception CreateSport", e.toString());
             e.printStackTrace();
         }
-        db.close();
+        closeDBs();
         return 0;
     }
     public long saveAthleteCompetencies(List<Competency> competencies) {
-        SQLiteDatabase db = myDataBase.getWritableDatabase();
+        //SQLiteDatabase db = myDataBase.getWritableDatabase();
+        openDBs();
         try {
             for (int i = 0; i < competencies.size(); i++) {
                 Competency competency = competencies.get(i);
                 ContentValues values = new ContentValues();
                 values.put("name", competency.getName());
                 values.put("competencyId", competency.getCompetencyId());
-                long id = db.insert(DbStrings.TABLE_ATHLETE_COMPETENCIES, null, values);
+                long id = writeableDb.insert(DbStrings.TABLE_ATHLETE_COMPETENCIES, null, values);
             }
         }catch (Exception e) {
             e.printStackTrace();
         }
+        closeDBs();
         return 0;
     }
     public List<Competency> getAthleteCompetencies() {
 
         List<Competency> toReturn = new ArrayList<>();
-        SQLiteDatabase db = myDataBase.getReadableDatabase();
+        //SQLiteDatabase db = myDataBase.getReadableDatabase();
+        openDBs();
         String query = "SELECT * FROM AthleteCompetencies";
         try {
-            Cursor c = db.rawQuery(query, null);
+            Cursor c = readableDb.rawQuery(query, null);
             if (c.moveToFirst()) {
                 do {
                     Competency competency = new Competency();
@@ -273,26 +294,27 @@ public class DatabaseHelper {
         }
 
 
-        db.close();
+        closeDBs();
         return toReturn;
     }
     public long createAppUser(AppUser user) {
-        SQLiteDatabase db = myDataBase.getReadableDatabase();
-
+        //SQLiteDatabase db = myDataBase.getReadableDatabase();
+        openDBs();
         ContentValues values = new ContentValues();
         values.put("backendId", user.getBackendId());
         values.put("email", user.getEmail());
         values.put("username", user.getUsername());
         values.put("gender", user.getGender());
-        long id = db.insertOrThrow(DbStrings.TABLE_APPUSER, null, values);
-        db.close();
+        long id = readableDb.insertOrThrow(DbStrings.TABLE_APPUSER, null, values);
+        closeDBs();
         return id;
     }
     public AppUser getAppUser() {
         String query = "SELECT * from AppUsers";
         AppUser toReturn;
-        SQLiteDatabase db = myDataBase.getReadableDatabase();
-        Cursor c = db.rawQuery(query, null);
+        //SQLiteDatabase db = myDataBase.getReadableDatabase();
+        openDBs();
+        Cursor c = readableDb.rawQuery(query, null);
         if (c.moveToFirst()) {
 
             int primaryKey = c.getInt(c.getColumnIndex(DbStrings.KEY_ID));
@@ -304,19 +326,20 @@ public class DatabaseHelper {
             return toReturn;
 
             } while (c.moveToNext());
-        db.close();
+        closeDBs();
         return new AppUser();
 
     }
     public List<Athlete> getAllAthletes() {
         List<Athlete> athletes = new ArrayList<>();
-        SQLiteDatabase db = myDataBase.getReadableDatabase();
+        //SQLiteDatabase db = myDataBase.getReadableDatabase();
+        openDBs();
         String selectQuery = "SELECT  * FROM " + DbStrings.TABLE_ATHLETES;
         try {
             Log.e(LOG, selectQuery);
 
 
-            Cursor c = db.rawQuery(selectQuery, null);
+            Cursor c = readableDb.rawQuery(selectQuery, null);
 
             // looping through all rows and adding to list
             if (c.moveToFirst()) {
@@ -337,8 +360,18 @@ public class DatabaseHelper {
          e.printStackTrace();
         }
 
-        db.close();
+        closeDBs();
         return athletes;
 
+    }
+    private void openDBs() {
+        this.writeableDb.close();
+        this.readableDb.close();
+        this.writeableDb = myDataBase.getWritableDatabase();
+        this.readableDb = myDataBase.getReadableDatabase();
+    }
+    private void closeDBs() {
+        this.writeableDb.close();
+        this.readableDb.close();
     }
 }

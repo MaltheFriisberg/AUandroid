@@ -20,6 +20,7 @@ import java.net.URL;
 
 import app.athleteunbound.DatabaseHelpers.DatabaseHelper;
 import app.athleteunbound.RESTapiUtils.IPFactory;
+import app.athleteunbound.RESTmodels.Sport;
 
 public class SportService extends IntentService {
 
@@ -47,7 +48,7 @@ public class SportService extends IntentService {
                 JSONArray sportArray = new JSONArray(getResult);
                 for (int i = 0; i < sportArray.length(); i++) {
                     JSONObject sport = sportArray.getJSONObject(i);
-
+                    Sport sportObj = new Sport(sport);
                     db.createSport(sport);
 
                 }
